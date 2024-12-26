@@ -724,7 +724,12 @@ def grafica_plotly(df,list_columns_df,list_name_columns,xColumnName,title,xLabel
             y=df[columna],
             marker_color=color,
             name=nombre.upper(),
-            text=df[columna].apply(lambda x: f"{prefijo_before}{x:,.0f}{prefijo_after}"),
+                       text = df[columna].apply(
+                lambda x: f"{prefijo_before}{float(x):,.0f}{prefijo_after}"
+                if isinstance(x, (int, float)) or (isinstance(x, str) and x.replace(',', '').replace('.', '').isdigit())
+                else f"{prefijo_before}{x}{prefijo_after}"
+            ),
+
             textposition='auto'
         ))
         if add_trendline:
