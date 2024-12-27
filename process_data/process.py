@@ -640,7 +640,7 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
     dc_ab['fecha'] = pd.to_datetime(dc_ab['fecha'])
     dc_cr['fecha'] = pd.to_datetime(dc_cr['fecha'])
     dc_cpr['fecha'] = pd.to_datetime(dc_cpr['fecha'])
-    print(dc_ab.head(5))
+    #print(dc_ab.head(5))
     
     try:
         #FILTROS

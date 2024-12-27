@@ -1,8 +1,10 @@
+import locale
 from django.utils import timezone
 from datetime import timedelta
 from datetime import date
 from django.shortcuts import render
 from process_data.process import *
+import datetime as dt
 
 
 
@@ -52,6 +54,12 @@ def compras_proveedor(request):
     fecha_fin = request.GET.get('fecha_fin',fecha_actual.strftime('%Y-%m-%d'))
     fecha_inicio = request.GET.get('fecha_inicio',fecha_inicio_default.strftime('%Y-%m-%d'))
     
+    locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')  # En algunos entornos podría ser 'es_MX'
+
+    # Convertir las fechas y formatearlas
+    fecha_inicio_str = dt.datetime.strptime(fecha_inicio, '%Y-%m-%d').strftime('%d de %b de %Y')
+    fecha_fin_str = dt.datetime.strptime(fecha_fin, '%Y-%m-%d').strftime('%d de %b de %Y')
+    
     
     
     compras_pro = compras_proveedor_pro(select_pro,fecha_inicio,fecha_fin)
@@ -68,6 +76,8 @@ def compras_proveedor(request):
         
         'fecha_fin': fecha_fin,
         'fecha_inicio': fecha_inicio,
+        'fecha_inicio_str': fecha_inicio_str,
+        'fecha_fin_str': fecha_fin_str,
     }
     #print(data)
     
