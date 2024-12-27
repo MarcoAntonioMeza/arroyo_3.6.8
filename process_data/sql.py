@@ -130,7 +130,7 @@ SELECT
 ca.id AS credito_abono_id, 
 ca.credito_id,
  ca.cantidad,
- --ca.`status`,
+ -- ca.`status`,
  -- ca.token_pay,
  c.compra_id,
  -- cm.proveedor_id,

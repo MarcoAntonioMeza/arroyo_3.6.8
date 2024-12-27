@@ -2,6 +2,8 @@
 {% load static %}
 {% block title %}Dashboard - My ARROYO{% endblock %}
 {% block content %}
+
+
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -10,27 +12,28 @@
                 <div class="col-md-4">
 
                     <label for="yearSelect">Selecciona proveedor:</label>
-                    <select class="form-control" id="proveedorSelect" name="proveedor" onchange="this.form.submit()">
+                    <select class="form-control select2" id="proveedorSelect" name="proveedor" onchange="this.form.submit()">
                         {% for prov in provedores_list.lista %}
-                        <option value="{{ prov }}" {% if prov == provedores_list.select %}selected{% endif %}>
-                            {{ prov }}
-                        </option>
+                            <option value="{{ prov }}" {% if prov == provedores_list.select %}selected{% endif %}>
+                                {{ prov }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <!-- Campo de fecha de inicio -->
                     <label for="fechaInicio">Fecha de inicio:</label>
-                    <input type="date" id="fechaInicio" name="fecha_inicio" class="form-control"
-                           value="{{ fecha_inicio }}">
+                    <input type="text" id="fechaInicio" name="fecha_inicio" class="form-control datepicker"
+                           value="{{ fecha_inicio }}" placeholder="Selecciona la fecha">
                 </div>
                 
                 <div class="col-md-3">
                     <!-- Campo de fecha de fin -->
                     <label for="fechaFin">Fecha de fin:</label>
-                    <input type="date" id="fechaFin" name="fecha_fin" class="form-control"
-                           value="{{ fecha_fin }}">
+                    <input type="text" id="fechaFin" name="fecha_fin" class="form-control datepicker"
+                           value="{{ fecha_fin }}" placeholder="Selecciona la fecha">
                 </div>
+                
                 <div class="col-md-2"><button type="submit" class="btn btn-primary mt-2">Filtrar</button></div>
             </div>
         </form>

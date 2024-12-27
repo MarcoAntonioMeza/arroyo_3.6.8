@@ -13,7 +13,8 @@ def index(request):
 
 def ventas_mes(request):
     year = int(request.GET.get('year',date.today().year))
-    data = ventas_mes_df(year)
+    month = int(request.GET.get('month',date.today().month))
+    data = ventas_mes_df(year,month)
     return render(request, 'ventas/mes.html',data)
 
 

@@ -26,6 +26,10 @@ MESES_ES = {
     9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
 }
 
+DIC_MESES = [(1, 'Enero'), (2, 'Febrero'), (3, 'Marzo'), (4, 'Abril'), 
+             (5, 'Mayo'), (6, 'Junio'), (7, 'Julio'), (8, 'Agosto'), 
+             (9, 'Septiembre'), (10, 'Octubre'), (11, 'Noviembre'), (12, 'Diciembre')]
+
 MESES =  [x.upper() for x in ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']]
 DIAS_SEMANA = [_.upper() for _ in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']]
 
@@ -35,7 +39,9 @@ def add_columns_date_spanish(df):
     df['year']       = df['fecha'].dt.year
     df['month']      = df['fecha'].dt.month
     df['month_name'] = df['fecha'].apply(lambda x: MESES[x.month - 1]).astype(str)
-    #df['day']        = df['fecha'].dt.day
+    df['day']        = df['fecha'].dt.day
+    #df['dia']        = df['fecha'].dt.day
+    
     #df['day_name']   = df['fecha'].apply(lambda x: DIAS_SEMANA[x.weekday()]).astype(str)
     #df['week']       = df['fecha'].dt.isocalendar().week
     #df['hour']       = df['fecha'].dt.hour
@@ -70,7 +76,7 @@ def consulta_sql(sql = VENTAS):
 ====================================================
 """
 
-def ventas_mes_df(anio):
+def ventas_mes_df(anio,mes):
     # Consultar datos de ventas, créditos y abonos
     df_ventas = consulta_sql()
     df_creditos = consulta_sql(CREDITO)
@@ -82,6 +88,7 @@ def ventas_mes_df(anio):
     df_creditos = add_columns_date_spanish(df_creditos)
     df_abonos = add_columns_date_spanish(df_abonos)
     
+    plot_mes_dia = graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, anio, mes)
     # Filtrar datos para el año seleccionado y agrupar por mes
     df_ventas_filtro_anio = df_ventas[df_ventas['year'] == anio]
     data_ventas_mes = df_ventas_filtro_anio.groupby(COLUMNA_GROUP)['venta_total'].sum().reset_index()
@@ -104,6 +111,7 @@ def ventas_mes_df(anio):
     
     data_mensual['mes'] = data_mensual['mes'].apply(lambda x: MESES[x - 1])  # Convertir número de mes a nombre
     
+    
     # Crear la gráfica con barras y líneas de tendencia
     list_columns_df = ['ventas', 'creditos', 'pagos']
     lis_columns_name = ['Ventas', 'Créditos', 'Pagos']
@@ -115,7 +123,7 @@ def ventas_mes_df(anio):
     lis_columns_name = ['crecimirnto en Ventas', 'crecimiento en Créditos', 'crecimiento en Créditos Pagos']
     title = ""# f"CRECIMIeNTO ANUAL EN COMPRAS, CREDITOS Y ABONOS en el año {anio}"
     
-    plot_crecimiento = grafica_plotly(data_mensual,list_columns_df,lis_columns_name,'mes',title,xlabel,ylabel,prefijo_after='%')
+    #plot_crecimiento = grafica_plotly(data_mensual,list_columns_df,lis_columns_name,'mes',title,xlabel,ylabel,prefijo_after='%')
     
     
     # Cálculo de medidas de tendencia central para cada categoría
@@ -132,15 +140,115 @@ def ventas_mes_df(anio):
 
     # Agregar el gráfico a la salida de ingresos
     INGRESOS['plot'] = grafica
-    INGRESOS['plot_crecimiento'] = plot_crecimiento
+    INGRESOS['plot_crecimiento'] = plot_mes_dia['plot']
+    
     
     # Retornar el diccionario con los ingresos y datos adicionales
+    del plot_mes_dia['plot']
     return {
         'ingresos': INGRESOS,
         'anios': df_ventas['year'].unique(),
-        'anio_seleccionado': anio
+        'meses': DIC_MESES,
+        'anio_seleccionado': anio,
+        'mes_seleccionado': mes,
+        'sumas': plot_mes_dia,
+        'mes': DIC_MESES[mes - 1][1]
     }
  
+    
+
+# Función para graficar por año, mes y día con el día de la semana
+def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
+    # Filtrar y agrupar los datos para ventas, créditos y abonos por día en el mes específico
+    df_ventas_filtro = df_ventas[(df_ventas['year'] == ANIO) & (df_ventas['month'] == MES)]
+    data_ventas = df_ventas_filtro.groupby('day')['venta_total'].sum().reset_index()
+
+    df_creditos_filtro = df_creditos[(df_creditos['year'] == ANIO) & (df_creditos['month'] == MES)]
+    data_creditos = df_creditos_filtro.groupby('day')['monto'].sum().reset_index()
+
+    df_abonos_filtro = df_abonos[(df_abonos['year'] == ANIO) & (df_abonos['month'] == MES)]
+    data_abonos = df_abonos_filtro.groupby('day')['cantidad'].sum().reset_index()
+
+    # Fusionar los datos para ventas, créditos y pagos por día
+    data_diaria = data_ventas.merge(data_creditos, on='day', how='outer') \
+                             .merge(data_abonos, on='day', how='outer')
+
+    # Renombrar columnas y reemplazar valores nulos con 0
+    data_diaria.columns = ['dia', 'ventas', 'creditos', 'pagos']
+    data_diaria = data_diaria.fillna(0)
+
+    # Agregar el día de la semana en formato de texto
+    DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    data_diaria['dia_semana'] = pd.to_datetime({'year': ANIO, 'month': MES, 'day': data_diaria['dia']}).dt.weekday
+    data_diaria['dia_semana'] = data_diaria['dia_semana'].apply(lambda x: DIAS_SEMANA[x])
+    
+    sum_ventas = df_ventas_filtro['venta_total'].sum()
+    sum_creditos = df_creditos_filtro['monto'].sum()
+    sum_abonos = df_abonos_filtro['cantidad'].sum()
+
+    # Crear la figura en Plotly
+    fig = go.Figure()
+
+    # Agregar barras de ventas, créditos y pagos
+    fig.add_trace(go.Bar(
+        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=data_diaria['ventas'],
+        name='Ventas',
+        marker_color=COLORS[0],
+        text=data_diaria['ventas'].apply(lambda x: f"${x:,.0f}"),
+        textposition='outside'
+    ))
+
+    fig.add_trace(go.Bar(
+        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=data_diaria['creditos'],
+        name='Créditos',
+        marker_color=COLORS[1],
+        text=data_diaria['creditos'].apply(lambda x: f"${x:,.0f}"),
+        textposition='outside'
+    ))
+
+    fig.add_trace(go.Bar(
+        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=data_diaria['pagos'],
+        name='Pagos',
+        marker_color=COLORS[2],
+        text=data_diaria['pagos'].apply(lambda x: f"${x:,.0f}"),
+        textposition='outside'
+    ))
+
+    # Configurar el layout
+    fig.update_layout(
+        title=f'Ventas, Créditos y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
+        xaxis_title='DÍAS',
+        yaxis_title='Monto Total en Pesos'.upper(),
+        barmode='group',  # Agrupar las barras
+        xaxis_tickmode='linear',  # Mostrar todos los días del mes
+        xaxis_tickangle=-45,  # Rotación de etiquetas en el eje x
+        template='plotly_dark',
+        showlegend=True,
+        margin=dict(l=40, r=40, t=60, b=60),
+        font=dict(color='#f8f9fa'),
+        plot_bgcolor='#343a40',
+        paper_bgcolor='#343a40',
+    )
+    fig.update_layout(legend=dict(
+        font=dict(color='#f8f9fa'),
+        orientation="h",
+        yanchor="top",
+        y=1.1,
+        xanchor="center",
+        x=0.5
+    ))
+    return{
+        'plot': plot(fig, include_plotlyjs=True, output_type='div'),
+        'sum_ventas': f"${sum_ventas:,.0f}",
+        'sum_creditos': f"${sum_creditos:,.0f}",
+        'sum_abonos': f"${sum_abonos:,.0f}"
+    }
+
+    # Mostrar el gráfico interactivo
+    #fig.show()    
     
 """
 ====================================================
@@ -518,8 +626,9 @@ def compras_credito_abonos(anio):
 
 
 def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
-    df_cp = consulta_sql(COMPRAS_PROVEDOR)
     
+    
+    df_cp = consulta_sql(COMPRAS_PROVEDOR)
     dc_ab = consulta_sql(ABONO_PROVEDOR)
     dc_cr = consulta_sql(CREDITO_PROVEDOR)
     dc_cpr  = consulta_sql(COMPRAS_PROVEDOR_C)
@@ -531,40 +640,55 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
     dc_ab['fecha'] = pd.to_datetime(dc_ab['fecha'])
     dc_cr['fecha'] = pd.to_datetime(dc_cr['fecha'])
     dc_cpr['fecha'] = pd.to_datetime(dc_cpr['fecha'])
-    #FILTROS
-    #ABONOS
-    abonos_gen_fil = dc_ab[
-        (dc_ab['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-        (dc_ab['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-        (dc_ab['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
-    ]
-    #creditos
-    credits_gen_fil = dc_cr[
-        (dc_cr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-        (dc_cr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-        (dc_cr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
-    ]
-    #COMPRAS 
-    compra_gen_fil = dc_cpr[
-        (dc_cpr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-        (dc_cpr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-        (dc_cpr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
-    ]
+    print(dc_ab.head(5))
     
-    resumen_abono = abonos_gen_fil.groupby('proveedor')['cantidad'].sum().reset_index()
-    print(resumen_abono)
-    resumen_compras = compra_gen_fil.groupby('proveedor')['total_compra'].sum().reset_index()
-    resumen_creditos = credits_gen_fil.groupby('proveedor')['monto_credito'].sum().reset_index()
+    try:
+        #FILTROS
+        #ABONOS
+        abonos_gen_fil = dc_ab[
+            (dc_ab['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
+            (dc_ab['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            (dc_ab['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+        ]
+        #print(abonos_gen_fil.head(5))
+        #creditos
+        credits_gen_fil = dc_cr[
+            (dc_cr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
+            (dc_cr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            (dc_cr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+        ]
+        #COMPRAS 
+        compra_gen_fil = dc_cpr[
+            (dc_cpr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
+            (dc_cpr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            (dc_cpr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+        ]
+        
     
-    merge = resumen_abono.merge(resumen_compras, on='proveedor', how='outer') \
-        .merge(resumen_creditos, on='proveedor', how='outer')
-    merge.columns = ['proveedor', 'abonos', 'compras', 'creditos']
-    merge.fillna(0)
-    #merge['adeudo'] = merge['creditos'] - merge['abonos'] 
-    xlabel = 'indicador'
-    ylabel = 'monto'
-    plot_totales_filtro = grafica_plotly(merge,['compras','creditos','abonos'],['COMPRAS','CRÉDITOS','abonos'],'proveedor',f'Resumen de {proveedor_name}',xlabel,ylabel,prefijo_before='$',add_trendline=False)
-    #print(merge)
+        resumen_abono = abonos_gen_fil.groupby('proveedor')['cantidad'].sum().reset_index()
+        resumen_compras = compra_gen_fil.groupby('proveedor')['total_compra'].sum().reset_index()
+        resumen_creditos = credits_gen_fil.groupby('proveedor')['monto_credito'].sum().reset_index()
+
+
+
+        merge = resumen_abono.merge(resumen_compras, on='proveedor', how='outer') \
+            .merge(resumen_creditos, on='proveedor', how='outer')
+        merge.columns = ['proveedor', 'abonos', 'compras', 'creditos']
+        merge.fillna(0)
+        #merge['adeudo'] = merge['creditos'] - merge['abonos'] 
+        xlabel = 'indicador'
+        ylabel = 'monto'
+        
+        plot_totales_filtro = grafica_plotly(merge,['compras','creditos','abonos'],['COMPRAS','CRÉDITOS','abonos'],'proveedor',f'Resumen de {proveedor_name}',xlabel,ylabel,prefijo_before='$',add_trendline=False)
+    except IOError as e:
+        plot_totales_filtro = None
+    except ValueError as e:
+        plot_totales_filtro = None
+    except Exception as e:
+        plot_totales_filtro = None
+    except:
+        plot_totales_filtro = None
+        
     
     
     df_cp.fillna(20, inplace=True)
@@ -729,7 +853,6 @@ def grafica_plotly(df,list_columns_df,list_name_columns,xColumnName,title,xLabel
                 if isinstance(x, (int, float)) or (isinstance(x, str) and x.replace(',', '').replace('.', '').isdigit())
                 else f"{prefijo_before}{x}{prefijo_after}"
             ),
-
             textposition='auto'
         ))
         if add_trendline:
