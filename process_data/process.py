@@ -196,7 +196,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         name='Ventas',
         marker_color=COLORS[0],
         text=data_diaria['ventas'].apply(lambda x: f"${x:,.0f}"),
-        textposition='outside'
+        textposition='auto'
     ))
 
     fig.add_trace(go.Bar(
@@ -205,7 +205,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         name='Créditos',
         marker_color=COLORS[1],
         text=data_diaria['creditos'].apply(lambda x: f"${x:,.0f}"),
-        textposition='outside'
+        textposition='auto'
     ))
 
     fig.add_trace(go.Bar(
@@ -214,7 +214,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         name='Pagos',
         marker_color=COLORS[2],
         text=data_diaria['pagos'].apply(lambda x: f"${x:,.0f}"),
-        textposition='outside'
+        textposition='auto'
     ))
 
     # Configurar el layout
@@ -544,7 +544,7 @@ def venta_detalle_producto():
 ====================================================
 """
 
-def compras_credito_abonos(anio):
+def compras_credito_abonos(anio,mes):
     df_compras   = consulta_sql(COMPRAS_PROVEDOR_C)
     df_compras   = add_columns_date_spanish(df_compras)
     creditos     = consulta_sql(CREDITO_PROVEDOR)
@@ -552,6 +552,90 @@ def compras_credito_abonos(anio):
     abonos       = consulta_sql(ABONO_PROVEDOR)
     abonos       = add_columns_date_spanish(abonos)
     
+    
+    #====================================================
+    #                diario 
+    #====================================================
+    compras_day = df_compras[(df_compras['year'] == anio ) & (df_compras['month'] == mes)]
+    compras_day_filtro = compras_day.groupby('day')['total_compra'].sum().reset_index()
+    creditos_day = creditos[(creditos['year'] == anio )  & (creditos['month'] == mes)]
+    creditos_day_filtro = creditos_day.groupby('day')['monto_credito'].sum().reset_index()
+    abonos_day = abonos[(abonos['year'] == anio) & (abonos['month'] == mes)]
+    abonos_day_filtro = abonos_day.groupby('day')['cantidad'].sum().reset_index()
+    merge_day = compras_day_filtro.merge(creditos_day_filtro, on='day', how='outer') \
+                                    .merge(abonos_day_filtro, on='day', how='outer')
+    #print(compras_day.head(5))
+
+    merge_day.columns = ['dia', 'compras', 'creditos', 'abonos']
+    merge_day.fillna(0)    
+    
+    merge_day['dia_semana'] = pd.to_datetime({'year': anio, 'month': mes, 'day': merge_day['dia']}).dt.weekday
+    merge_day['dia_semana'] = merge_day['dia_semana'].apply(lambda x: DIAS_SEMANA[x])
+    sum_compras = compras_day['total_compra'].sum()
+    sum_creditos = creditos_day['monto_credito'].sum()
+    sum_abonos = abonos_day['cantidad'].sum()
+    
+     # Crear la figura en Plotly
+    fig = go.Figure()
+
+    # Agregar barras de ventas, créditos y pagos
+    fig.add_trace(go.Bar(
+        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=merge_day['compras'],
+        name='COMPRAS',
+        marker_color=COLORS[0],
+        text=merge_day['compras'].apply(lambda x: f"${x:,.0f}"),
+        textposition='auto'
+    ))
+
+    fig.add_trace(go.Bar(
+        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=merge_day['creditos'],
+        name='Créditos',
+        marker_color=COLORS[1],
+        text=merge_day['creditos'].apply(lambda x: f"${x:,.0f}"),
+        textposition='auto'
+    ))
+
+    fig.add_trace(go.Bar(
+        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        y=merge_day['abonos'],
+        name='abonos',
+        marker_color=COLORS[2],
+        text=merge_day['abonos'].apply(lambda x: f"${x:,.0f}"),
+        textposition='auto'
+    ))
+
+    # Configurar el layout
+    fig.update_layout(
+        title=f'Ventas, Créditos y ABONOS en {MESES[mes - 1]} {anio} por Día'.upper(),
+        xaxis_title='DÍAS',
+        yaxis_title='Monto Total en Pesos'.upper(),
+        barmode='group',  # Agrupar las barras
+        xaxis_tickmode='linear',  # Mostrar todos los días del mes
+        xaxis_tickangle=-45,  # Rotación de etiquetas en el eje x
+        template='plotly_dark',
+        showlegend=True,
+        margin=dict(l=40, r=40, t=60, b=60),
+        font=dict(color='#f8f9fa'),
+        plot_bgcolor='#343a40',
+        paper_bgcolor='#343a40',
+    )
+    fig.update_layout(legend=dict(
+        font=dict(color='#f8f9fa'),
+        orientation="h",
+        yanchor="top",
+        y=1.1,
+        xanchor="center",
+        x=0.5
+    ))
+    grafica_diario = plot(fig, include_plotlyjs=True, output_type='div')
+    
+    
+    
+    #====================================================
+    #                      MENSUAL 
+    #====================================================
     total_compras = df_compras.groupby('year')['total_compra'].sum().reset_index()
     total_creditos = creditos.groupby('year')['monto_credito'].sum().reset_index()
     total_abonos   = abonos.groupby('year')['cantidad'].sum().reset_index()
@@ -561,11 +645,15 @@ def compras_credito_abonos(anio):
                              .merge(total_abonos, on='year', how='outer')
               
     detalle_anual.columns = ['year', 'compras', 'creditos', 'abonos']
-    detalle_anual['crecimiento_compras'] = detalle_anual['compras'].pct_change() * 100
-    detalle_anual['crecimiento_creditos'] = detalle_anual['creditos'].pct_change() * 100
-    detalle_anual['crecimiento_abonos'] = detalle_anual['abonos'].pct_change() * 100
+    #detalle_anual['crecimiento_compras'] = detalle_anual['compras'].pct_change() * 100
+    #detalle_anual['crecimiento_creditos'] = detalle_anual['creditos'].pct_change() * 100
+    #detalle_anual['crecimiento_abonos'] = detalle_anual['abonos'].pct_change() * 100
     detalle_anual.fillna(0, inplace=True)
     detalle_anual['year'] = detalle_anual['year'].astype(str)
+    
+    
+    
+    
     
     #====================================================
     #               TOTALES
@@ -579,10 +667,10 @@ def compras_credito_abonos(anio):
     grafica = grafica_plotly(detalle_anual,list_columns_df,lis_columns_name,'year',title,xlabel,ylabel,prefijo_before='$')
     
     
-    #/////////////////////CRECIMIRNTOS/////////////////////
-    list_columns_df = ['crecimiento_compras', 'crecimiento_creditos', 'crecimiento_abonos']
-    lis_columns_name = ['CRECIMIENTO EN COMPRAS', 'CRECIMIENTO ENCRÉDITOS', 'CRECIMIENTO EN PAGOS']
-    grafica_cre = grafica_plotly(detalle_anual,list_columns_df,lis_columns_name,'year',title,xlabel,ylabel,prefijo_after="%")
+    ##/////////////////////CRECIMIRNTOS/////////////////////
+    #list_columns_df = ['crecimiento_compras', 'crecimiento_creditos', 'crecimiento_abonos']
+    #lis_columns_name = ['CRECIMIENTO EN COMPRAS', 'CRECIMIENTO ENCRÉDITOS', 'CRECIMIENTO EN PAGOS']
+    #grafica_cre = grafica_plotly(detalle_anual,list_columns_df,lis_columns_name,'year',title,xlabel,ylabel,prefijo_after="%")
     
    
     #====================================================
@@ -613,10 +701,17 @@ def compras_credito_abonos(anio):
     
     
     INGRESOS = {'anios': df_compras['year'].unique(),
-        'anio_seleccionado': anio}
+        'anio_seleccionado': anio,
+         'plot_diario': grafica_diario,
+        'sum_compras': f"${sum_compras:,.0f}",
+        'sum_creditos': f"${sum_creditos:,.0f}",
+        'sum_abonos': f"${sum_abonos:,.0f}",
+        'meses': DIC_MESES,
+        'mes_seleccionado': mes,
+        }
     INGRESOS['plot_total'] = grafica
     INGRESOS['plot_mes'] = grafica_mes
-    INGRESOS['plot_total_cre'] = grafica_cre
+    #INGRESOS['plot_total_cre'] = grafica_cre
     
     
     

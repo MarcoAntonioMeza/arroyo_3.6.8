@@ -35,7 +35,8 @@ def producto_compra_ventas(request):
 #================================================================
 def compras(request):
     year = int(request.GET.get('year',date.today().year))
-    data = compras_credito_abonos(year)
+    month = int(request.GET.get('month',date.today().month))
+    data = compras_credito_abonos(year,month)
     return render(request, 'compras/index.html',data)
 
 
