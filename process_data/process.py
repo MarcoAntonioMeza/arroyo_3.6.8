@@ -927,6 +927,81 @@ def ventas_compra_producto(producto_name,date_ini,date_fin):
     pass
 
 
+"""
+====================================================
+            CREDITOS Y ABONOS POR CLIENTE
+====================================================
+"""
+
+
+def get_creditos_abonos_by_cliente(cliente_id, fecha_inicio, fecha_fin, tipo_grafica='pastel'):
+    """
+    Calcula los totales de créditos, abonos y monto por pagar de un cliente
+    en un rango de fechas específico. Además, genera una gráfica de montos.
+    
+    Args:
+        cliente_id (int): ID del cliente.
+        fecha_inicio (str): Fecha de inicio en formato 'YYYY-MM-DD'.
+        fecha_fin (str): Fecha de fin en formato 'YYYY-MM-DD'.
+        tipo_grafica (str): Tipo de gráfica ('pastel', 'lineas', 'barras').
+    
+    Returns:
+        dict: Totales de créditos, abonos, monto por pagar en formato monetario,
+              y una gráfica en HTML.
+    """
+    try:
+        # Cargar datos
+        DF_CREDITOS = consulta_sql(CREDITOS_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
+        DF_ABONOS = consulta_sql(CREDITO_ABONO_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
+        
+        if DF_CREDITOS.empty and DF_ABONOS.empty:
+            return {'creditos': "$0.00", 'abonos': "$0.00", 'por_pagar': "$0.00", 'grafica': None}
+        
+        # Procesar datos
+        DF_CREDITOS = add_columns_date_spanish(DF_CREDITOS)
+        DF_ABONOS = add_columns_date_spanish(DF_ABONOS)
+        
+        sum_creditos = DF_CREDITOS['monto'].sum()
+        sum_abonos = DF_ABONOS['cantidad'].sum()
+        por_pagar = sum_creditos - sum_abonos
+        
+        # Crear gráfico de pastel
+        fig = go.Figure()
+
+        # Agregar créditos como parte del pastel
+        fig.add_trace(go.Pie(
+            labels=["Créditos", "Abonos", "Por Pagar"],
+            values=[sum_creditos, sum_abonos, por_pagar],
+            name="Distribución de Montos",
+            marker=dict(colors=COLORS),
+            textinfo='label+percent',  # Muestra la etiqueta y porcentaje
+            hole=0.3  # Hueco en el centro para un gráfico de dona (opcional)
+        ))
+
+        # Personalizar diseño
+        fig.update_layout(
+            title="Distribución de Créditos, Abonos y Monto por Pagar",
+            template='plotly_dark',
+            font=dict(color='#f8f9fa'),
+            plot_bgcolor='#343a40',
+            paper_bgcolor='#343a40',
+            showlegend=True,
+            margin=dict(l=40, r=40, t=60, b=60),
+        )
+        
+        # Convertir gráfica a HTML
+        grafica_html = fig.to_html(full_html=False)
+
+        # Retornar resultados
+        return {
+            'creditos': f"${sum_creditos:,.2f}",
+            'abonos': f"${sum_abonos:,.2f}",
+            'por_pagar': f"${por_pagar:,.2f}",
+            'grafica': grafica_html
+        }
+
+    except Exception as e:
+        return {'error': str(e)}
 
 """
 ==========================================

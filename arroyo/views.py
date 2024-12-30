@@ -83,3 +83,49 @@ def compras_proveedor(request):
     #print(data)
     
     return render(request, 'compras/proveedor.html',data)
+
+
+
+
+def creditos_by_cliente(request):
+    # Ejecuta la consulta y convierte los resultados a un formato manejable
+    DF_LIST_CLIENT = consulta_sql(SQL_ALL_CLIENTS)  # Asumiendo que esta función devuelve un DataFrame
+    del DF_LIST_CLIENT['creditos_sum']  # Si no necesitas esta columna
+    # Convierte el DataFrame a una lista de tuplas
+    client_list = DF_LIST_CLIENT[['id', 'name']].to_records(index=False)
+    client_choices = [(row.id, row.name) for row in client_list]
+    
+    fecha_actual = timezone.now().date()
+    #fecha_inicio_default = fecha_actual - timedelta(days=2)
+    fecha_inicio_default = datetime(2023, 10, 1)
+    
+    fecha_fin = request.GET.get('fecha_fin',fecha_actual.strftime('%Y-%m-%d'))
+    fecha_inicio = request.GET.get('fecha_inicio',fecha_inicio_default.strftime('%Y-%m-%d'))
+    
+    locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')  # En algunos entornos podría ser 'es_MX'
+    
+    
+    #CLIENTE SELET 
+    select_client = request.GET.get('cliente',client_choices[0][0])
+    select_client = int(select_client)
+    #print(select_client,'cliente seleccionado')
+    
+    
+    # Convertir las fechas y formatearlas
+    fecha_inicio_str = dt.datetime.strptime(fecha_inicio, '%Y-%m-%d').strftime('%d de %b de %Y')
+    fecha_fin_str = dt.datetime.strptime(fecha_fin, '%Y-%m-%d').strftime('%d de %b de %Y')
+    
+    info = get_creditos_abonos_by_cliente(select_client,fecha_inicio,fecha_fin)
+    
+    
+    context = {
+        'client_choices': client_choices,
+        'select_client':select_client,
+        'fecha_fin': fecha_fin,
+        'fecha_inicio': fecha_inicio,
+        'fecha_inicio_str': fecha_inicio_str,
+        'fecha_fin_str': fecha_fin_str,
+        'info':info
+    }
+    
+    return render(request, 'creditos/cliente.html', context)

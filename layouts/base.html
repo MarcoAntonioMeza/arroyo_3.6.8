@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}My Dashboard{% endblock %}</title>
+    <title>{% block title %}ARROLLO |{% endblock %}</title>
 
     <!-- CSS Principal -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -147,14 +147,29 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-users"></i> CLIENTES
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="comprasDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'creditos_cliente' %}">
+                                    <i class="fas fa-coins"></i> CRÉDITOS
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    
                 </ul>
 
-                <!-- Right-aligned Links (e.g., User Profile) -->
+                <!-- Right-aligned Links (e.g., User Profile)
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Perfil</a>
                     </li>
-                </ul>
+                </ul> -->
             </div>
         </div>
     </nav>

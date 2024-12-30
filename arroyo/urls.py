@@ -10,5 +10,6 @@ urlpatterns = [
      
      path('compras/',v.compras, name='compras'),
      path('compras/proveedor/',v.compras_proveedor, name='compras_proveedor'),
+     path('creditos/cliente/',v.creditos_by_cliente, name='creditos_cliente'),
      
 ]

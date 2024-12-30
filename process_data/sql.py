@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 VENTAS = """
 SELECT
 v.id AS venta_id, v.total AS venta_total,  v.tipo AS venta_tipo,
@@ -260,4 +261,83 @@ GROUP BY
 ORDER BY
     sum_total_compras DESC;
 
+"""
+
+
+#================================================================
+#                               CREDITTOS
+#================================================================
+def CREDITOS_CLIENTE(cliente_id=295,days=60,date_inicio=None,date_fin=None):
+  # Get today's date
+    today = datetime.today()
+    # Calculate the date one month ago
+    one_month_ago = today - timedelta(days=days) 
+
+    # Format the dates as strings for the SQL query
+    date_ini = one_month_ago.strftime('%Y-%m-%d')
+    date_fin = today.strftime('%Y-%m-%d')
+    if date_inicio and date_fin:
+        date_ini = date_inicio
+        date_fin = date_fin
+    sql = f"""
+      SELECT c.id AS credito_id, 
+      -- c.venta_id,
+      c.cliente_id, c.monto,
+      -- c.`status`, c.tipo,
+      UPPER(cl.nombre) AS cliente,
+      FROM_UNIXTIME(c.created_at) AS fecha
+      FROM credito AS c
+      JOIN  cliente AS cl ON cl.id = c.cliente_id
+      WHERE c.tipo = 10 AND c.cliente_id is NOT NULL  
+      AND cl.id = {cliente_id}
+      AND FROM_UNIXTIME(c.created_at) BETWEEN '{date_ini}' AND '{date_fin}';
+    """
+
+    return sql
+
+
+
+
+
+def CREDITO_ABONO_CLIENTE(cliente_id=295,days=60,date_inicio=None,date_fin=None):
+    # Get today's date
+    today = datetime.today()
+    # Calculate the date one month ago
+    one_month_ago = today - timedelta(days=days) 
+
+    # Format the dates as strings for the SQL query
+    date_ini = one_month_ago.strftime('%Y-%m-%d')
+    date_fin = today.strftime('%Y-%m-%d')
+
+    if date_inicio and date_fin:
+        date_ini = date_inicio
+        date_fin = date_fin
+    
+    query = f"""
+    SELECT
+        ca.id AS credito_abono_id, 
+        ca.cantidad, 
+        c.cliente_id,
+        UPPER(cl.nombre) AS cliente,
+        FROM_UNIXTIME(ca.created_at) AS fecha
+    FROM credito_abono AS ca
+    JOIN credito AS c ON c.id = ca.credito_id
+    JOIN cliente AS cl ON cl.id = c.cliente_id
+    WHERE c.tipo = 10
+     AND c.cliente_id = {cliente_id}
+    AND FROM_UNIXTIME(ca.created_at) BETWEEN '{date_ini}' AND '{date_fin}'; 
+    """  
+
+    return query
+
+
+SQL_ALL_CLIENTS = """
+SELECT 
+    cl.id AS id, 
+    UPPER(cl.nombre) AS name ,
+    SUM(c.id) AS creditos_sum
+FROM credito AS c
+JOIN cliente AS cl ON cl.id = c.cliente_id
+GROUP BY cl.id, cl.nombre
+ORDER BY creditos_sum DESC;
 """

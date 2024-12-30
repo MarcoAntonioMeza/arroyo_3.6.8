@@ -61,7 +61,7 @@
                             {{anio_seleccionado}}</h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>Total de ingresos en {{anio_seleccionado}}</strong>
+                                <strong>Total de ingresos  </strong>
                                 <span>{{ ingresos.ventas.total }}</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -79,7 +79,7 @@
             <div class="col-md-4">
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> POR COBRAR
+                        <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> POR COBRAR en {{anio_seleccionado}}
                         </h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -94,7 +94,7 @@
             <div class="col-md-4">
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> PAGOS</h5>
+                        <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> PAGOS en {{anio_seleccionado}}</h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <strong>Total de ingresos EN ANBONOS </strong>
@@ -139,10 +139,10 @@
                     <div class="card-body">
                         <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> Resumen de Ingresos en
                             {{mes}}</h5>
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush text-center">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 
-                                <span>{{ sumas.sum_ventas }}</span>
+                                <span class="text-center" >{{ sumas.sum_ventas }}</span>
                             </li>
                             
                         </ul>
@@ -154,10 +154,10 @@
                     <div class="card-body">
                         <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> POR COBRAR en  {{mes}}
                         </h5>
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush text-center">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>TOTAL DE  CREDITOS  </strong>
-                                <span>{{ sumas.sum_creditos }}</span>
+                                
+                                <span class="text-center" >{{ sumas.sum_creditos }}</span>
                             </li>
 
                         </ul>
@@ -168,10 +168,10 @@
                 <div class="card shadow mb-4">
                     <div class="card-body">
                         <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> PAGOS en {{mes}}</h5>
-                        <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush text-center ">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>Total de ingresos EN ANBONOS </strong>
-                                <span>{{ sumas.sum_abonos }}</span>
+                                
+                                <span class="text-center">{{ sumas.sum_abonos }}</span>
                             </li>
 
                         </ul>
