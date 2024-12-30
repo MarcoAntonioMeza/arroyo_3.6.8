@@ -20,11 +20,54 @@
     <!-- Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    
+
+
+
 
 </head>
 
 <style>
+        .datepicker {
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 1rem;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .datepicker:focus {
+        border-color: #007bff;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+
+    .form-label {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Estilo para los contenedores de los inputs */
+    .input-container {
+        position: relative;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .input-container .datepicker-icon {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        color: #007bff;
+        font-size: 18px;
+    }
     .card {
         background-color: #343a40;
         /* Fondo de tarjeta oscuro */
@@ -95,7 +138,7 @@
     }
 </style>
 
-</style>
+
 
 <body>
     <!-- Navbar -->
@@ -160,8 +203,8 @@
                             </li>
                         </ul>
                     </li>
-                    
-                    
+
+
                 </ul>
 
                 <!-- Right-aligned Links (e.g., User Profile)
@@ -198,14 +241,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!-- Estilos para Bootstrap Datepicker -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css">
 
-    <!-- Bootstrap Datepicker -->
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
-    <!-- Traducción Bootstrap Datepicker -->
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+    <!-- Script para Bootstrap Datepicker -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+<!-- Traducción Bootstrap Datepicker en español -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.es.min.js"></script>
 
     {% block extra_js %}
     <script>
@@ -217,15 +260,24 @@
             });
             $('.select2-container .select2-selection--single').css('height', 'calc(2.55rem + 2px)');
 
+
             $('.datepicker').datepicker({
-                format: 'yyyy-mm-dd', // Formato de la fecha
-                autoclose: true, // Cierra el calendario automáticamente al seleccionar
-                todayHighlight: true, // Resalta la fecha de hoy
-                language: 'es' // Configura el idioma a español (si incluiste el archivo de traducción)
+                format: 'yyyy-mm-dd',  // Formato de fecha
+                language: 'es', // Configura el idioma a español (si incluiste el archivo de traducción)
+                autoclose: true         // Cerrar el calendario al seleccionar una fecha
             });
+
+            //$('.datepicker').datepicker({
+            //    format: 'yyyy-mm-dd', // Formato de la fecha
+            //    autoclose: true, // Cierra el calendario automáticamente al seleccionar
+            //    todayHighlight: true, // Resalta la fecha de hoy
+            //    language: 'es' // Configura el idioma a español (si incluiste el archivo de traducción)
+            //});
         });
     </script>
     {% endblock %}
 </body>
+
+
 
 </html>
