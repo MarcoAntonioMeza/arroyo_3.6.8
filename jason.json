@@ -1,0 +1,112 @@
+{
+    "ApiKey": "TO41Jtmq+rph97My\/XLTYQ==",
+    "SDTVentaConfirmacion": [
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 23,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "Vanessa Alcaraz",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 24,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "Fernando farfan",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 27,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "Paolo vivanco",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 28,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "sofia vivanco",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 31,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "vanessa vivanco",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 32,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "ruben uriel cabanas",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        },
+        {
+            "Viaje": 8,
+            "Partida": 4,
+            "FechaSalida": "2024-12-16T09:15:00",
+            "Asiento": 36,
+            "Apertura": "4921a400-64c6-48d6-84c8-16ffcd9b3151",
+            "Cliente": "",
+            "Estatus": "PRECONFIRMACION",
+            "ClienteNombre": "Dario cabanas Alcaraz",
+            "LugarAbordaje": "025",
+            "Descuento": "D0",
+            "Precio": 240,
+            "DescuentoImporte": "0.00"
+        }
+    ],
+    "SDTVentasPagos": [
+        {
+            "IdTransaccion": "c03b31bd-5aa8-43ce-8cea-0ea3cc0fc550",
+            "Partida": 1,
+            "FormaPago": "99",
+            "Fecha": "2024-12-09T14:53:25",
+            "Monto": 1680
+        }
+    ]
+}

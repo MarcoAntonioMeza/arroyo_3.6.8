@@ -88,6 +88,14 @@ DATABASES = {
         'PASSWORD': 'LS:dash*123',
         'HOST': '162.240.78.82',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
         'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+    },
+    'localhost': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'wwlerc_arroyo_data',
+        'USER': 'wwlerc_arroyo_data',
+        'PASSWORD': '$,.s(4MHPym%',
+        'HOST': '162.214.146.177',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
+        'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
     }
 }
 #DATABASES = {

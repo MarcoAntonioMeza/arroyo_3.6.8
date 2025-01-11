@@ -5,6 +5,7 @@ from datetime import date
 from django.shortcuts import render
 from process_data.process import *
 import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -22,8 +23,63 @@ def ventas_mes(request):
 
 
 def productos(request):
-    data = venta_detalle_producto()
+    fecha_fin = request.GET.get('fecha_fin',None)
+    fecha_inicio = request.GET.get('fecha_inicio',None)
+    cantidad = request.GET.get('cantidad',5)
+    cantidad = int(cantidad)
+     # Si ambas fechas están presentes, convertirlas a objetos datetime
+    
+    
+    if not fecha_inicio or not fecha_fin:
+        fecha_actual = datetime.now()
+        fecha_inicio = (fecha_actual - timedelta(days=365)).strftime('%Y-%m-%d')
+        fecha_fin = fecha_actual.strftime('%Y-%m-%d')
+    
+    data = venta_detalle_producto(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin,cantidad=cantidad)
+    
+    # Convertir las fechas y formatearlas
+    fecha_inicio_str = dt.datetime.strptime(fecha_inicio, '%Y-%m-%d').strftime('%d de %b de %Y')
+    fecha_fin_str = dt.datetime.strptime(fecha_fin, '%Y-%m-%d').strftime('%d de %b de %Y')
+    
+    
+    
+    data['fecha_inicio'] = fecha_inicio
+    data['fecha_fin'] = fecha_fin
+    data['fecha_inicio_str'] = fecha_inicio_str
+    data['fecha_fin_str'] = fecha_fin_str
+    data['cantidad'] = cantidad
     return render(request, 'productos/index.html',data)
+
+
+def productos_menos_vendidos(request):
+    fecha_fin = request.GET.get('fecha_fin',None)
+    fecha_inicio = request.GET.get('fecha_inicio',None)
+    cantidad = request.GET.get('cantidad',5)
+    cantidad = int(cantidad)
+     # Si ambas fechas están presentes, convertirlas a objetos datetime
+    
+    
+    if not fecha_inicio or not fecha_fin:
+        fecha_actual = datetime.now()
+        fecha_inicio = (fecha_actual - timedelta(days=365)).strftime('%Y-%m-%d')
+        fecha_fin = fecha_actual.strftime('%Y-%m-%d')
+    
+    data = venta_detalle_producto(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin,cantidad=cantidad,is_top=False)
+    
+    # Convertir las fechas y formatearlas
+    fecha_inicio_str = dt.datetime.strptime(fecha_inicio, '%Y-%m-%d').strftime('%d de %b de %Y')
+    fecha_fin_str = dt.datetime.strptime(fecha_fin, '%Y-%m-%d').strftime('%d de %b de %Y')
+    
+    
+    
+    data['fecha_inicio'] = fecha_inicio
+    data['fecha_fin'] = fecha_fin
+    data['fecha_inicio_str'] = fecha_inicio_str
+    data['fecha_fin_str'] = fecha_fin_str
+    data['cantidad'] = cantidad
+    return render(request, 'productos/menos_vendidos.html',data)
+
+
 
 def producto_compra_ventas(request):
     producto = request.GET.get('producto')

@@ -1,77 +1,118 @@
 from datetime import datetime, timedelta
-VENTAS = """
-SELECT
-v.id AS venta_id, v.total AS venta_total,  v.tipo AS venta_tipo,
- v.cliente_id AS venta_cliente , FROM_UNIXTIME(v.created_at) AS fecha
-FROM venta AS v;
-"""
 
-CREDITO = """
-SELECT c.id AS credito_id, c.venta_id, c.cliente_id, c.monto,
-c.`status`, c.tipo,
-FROM_UNIXTIME(c.created_at) AS fecha
-FROM credito AS c
-WHERE c.tipo = 10 ;
-"""
+def VENTAS(año=None, mes=None):
+    # Si no se pasa un año, se usa el año actual
+    if not año:
+        año = datetime.now().year
+    
+    # Si no se pasa un mes, se usa el mes actual
+    if not mes:
+        mes = datetime.now().month
 
-ABONO = """
-SELECT
-ca.id AS credito_abono_id, ca.credito_id, ca.cantidad, ca.`status`, ca.token_pay,
-c.venta_id, c.cliente_id,
-FROM_UNIXTIME(ca.created_at) AS fecha
-FROM credito_abono AS ca
-JOIN credito AS c ON c.id = ca.credito_id
-WHERE c.tipo = 10;
-"""
+    # Formatear las fechas de inicio y fin del mes
+    fecha_inicio = f"{año}-{mes:02d}-01"  # Primer día del mes
+    fecha_fin = f"{año}-{mes:02d}-{(datetime(año, mes, 1) - timedelta(days=1)).day}"  # Último día del mes
 
 
+    return f"""
+    SELECT
+        v.id AS venta_id, v.total AS venta_total, v.tipo AS venta_tipo,
+        v.cliente_id AS venta_cliente, FROM_UNIXTIME(v.created_at) AS fecha
+    FROM venta AS v
+    WHERE FROM_UNIXTIME(v.created_at) >= '{fecha_inicio}' AND FROM_UNIXTIME(v.created_at) <= '{fecha_fin}';
+    """
 
-VENTA_DETALLE = """
-SELECT
-    vd.id,
-    -- c.nombre AS cliente,
-    -- c.id AS cliente_id,
-    -- vd.venta_id,
-    -- vd.producto_id,
-    p.nombre AS producto,
-    p.costo,
-    -- p.precio_publico,
-    -- p.precio_mayoreo,
-    -- p.precio_menudeo,
-     vd.cantidad,
-    -- vd.precio_venta,
-    -- vd.created_by,
-    -- u.nombre AS creado_por,
-    p.tipo_medida,
-    -- Ajuste de cantidad dependiendo del tipo de medida
-    CASE
-        WHEN p.tipo_medida = 20 THEN 'Kilos'
-        WHEN p.tipo_medida = 10 THEN 'Piezas'
-        ELSE '--'
-    END AS unidad_medida,
-   --  pertenece.id AS pertenece_id,
-    -- pertenece.nombre AS pertenece,
-    -- suc.id AS ruta_asignada_id,
-    -- suc.nombre AS ruta_asignada,
-    -- vd.created_at,
-    DATE(FROM_UNIXTIME(vd.created_at)) AS fecha,  -- Solo la fecha
-    TIME(FROM_UNIXTIME(vd.created_at)) AS hora
-FROM
-    venta_detalle AS vd
-INNER JOIN
-    producto AS p ON p.id = vd.producto_id
-INNER JOIN
-    user AS u ON u.id = vd.created_by
-LEFT JOIN
-    venta AS v ON vd.venta_id = v.id  -- Cambiado de vd.id a vd.venta_id para corregir el JOIN
-LEFT JOIN
-    cliente AS c ON c.id = v.cliente_id
-LEFT JOIN
-    sucursal AS suc ON v.ruta_sucursal_id = suc.id
-LEFT JOIN
-    sucursal AS pertenece ON v.sucursal_id = pertenece.id
-"""
+def CREDITO(año=None, mes=None):
+    # Si no se pasa un año, se usa el año actual
+    if not año:
+        año = datetime.now().year
+    
+    # Si no se pasa un mes, se usa el mes actual
+    if not mes:
+        mes = datetime.now().month
 
+    # Formatear las fechas de inicio y fin del mes
+    fecha_inicio = f"{año}-{mes:02d}-01"  # Primer día del mes
+    fecha_fin = f"{año}-{mes:02d}-{(datetime(año, mes, 1) - timedelta(days=1)).day}"  # Último día del mes
+    
+    return f"""
+    SELECT c.id AS credito_id, c.venta_id, c.cliente_id, c.monto,
+        c.status, c.tipo, FROM_UNIXTIME(c.created_at) AS fecha
+    FROM credito AS c
+    WHERE c.tipo = 10 AND FROM_UNIXTIME(c.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}';
+    """
+
+def ABONO(año=None, mes=None):
+    # Si no se pasa un año, se usa el año actual
+    if not año:
+        año = datetime.now().year
+    
+    # Si no se pasa un mes, se usa el mes actual
+    if not mes:
+        mes = datetime.now().month
+
+    # Formatear las fechas de inicio y fin del mes
+    fecha_inicio = f"{año}-{mes:02d}-01"  # Primer día del mes
+    fecha_fin = f"{año}-{mes:02d}-{(datetime(año, mes, 1) - timedelta(days=1)).day}"  # Último día del mes
+    return  f"""
+    SELECT
+        ca.id AS credito_abono_id, ca.credito_id, ca.cantidad, ca.status, ca.token_pay,
+        c.venta_id, c.cliente_id, FROM_UNIXTIME(ca.created_at) AS fecha
+    FROM credito_abono AS ca
+    JOIN credito AS c ON c.id = ca.credito_id
+    WHERE c.tipo = 10 AND FROM_UNIXTIME(ca.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}';
+    """
+
+
+
+def VENTA_DETALLE(fecha_inicio=None, fecha_fin=None):
+    """
+    Genera una consulta SQL completa con las fechas ya incrustadas.
+    Si no se especifican fechas, usa el rango desde un año atrás hasta la fecha actual.
+
+    :param fecha_inicio: Fecha de inicio en formato 'YYYY-MM-DD' (opcional).
+    :param fecha_fin: Fecha de fin en formato 'YYYY-MM-DD' (opcional).
+    :return: Consulta SQL como cadena con las fechas ya aplicadas.
+    """
+    # Si no se especifican fechas, usa un rango de un año
+    if not fecha_inicio or not fecha_fin:
+        fecha_actual = datetime.now()
+        fecha_inicio = (fecha_actual - timedelta(days=365)).strftime('%Y-%m-%d')
+        fecha_fin = fecha_actual.strftime('%Y-%m-%d')
+
+    consulta_sql = f"""
+    SELECT
+        vd.id,
+        p.nombre AS producto,
+        p.costo,
+        vd.cantidad,
+        p.tipo_medida,
+        CASE
+            WHEN p.tipo_medida = 20 THEN 'Kilos'
+            WHEN p.tipo_medida = 10 THEN 'Piezas'
+            ELSE '--'
+        END AS unidad_medida,
+        DATE(FROM_UNIXTIME(vd.created_at)) AS fecha,
+        TIME(FROM_UNIXTIME(vd.created_at)) AS hora
+    FROM
+        venta_detalle AS vd
+    INNER JOIN
+        producto AS p ON p.id = vd.producto_id
+    INNER JOIN
+        user AS u ON u.id = vd.created_by
+    LEFT JOIN
+        venta AS v ON vd.venta_id = v.id
+    LEFT JOIN
+        cliente AS c ON c.id = v.cliente_id
+    LEFT JOIN
+        sucursal AS suc ON v.ruta_sucursal_id = suc.id
+    LEFT JOIN
+        sucursal AS pertenece ON v.sucursal_id = pertenece.id
+    WHERE
+        DATE(FROM_UNIXTIME(vd.created_at)) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+    """
+    #print( consulta_sql.strip())
+    return consulta_sql.strip()
 
 
 """"
@@ -79,75 +120,69 @@ LEFT JOIN
     COMPRAS
 ====================================================
 """
-COMPRAS_PROVEDOR_C = """
-SELECT 
--- COMPRA
-cm.id AS id,
--- cm.lat, cm.lng,
-cm.total AS total_compra,
-cm.`status`,
+def COMPRAS_PROVEDOR_C(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
+    fecha_inicio = f"{año_ini}-{mes_ini:02d}-{dia_ini:02d}"
+    fecha_fin = f"{año_fin}-{mes_fin:02d}-{dia_fin:02d}"
+    
+    sql = f"""
+    SELECT 
+        cm.id AS id,
+        cm.total AS total_compra,
+        cm.`status`,
+        pr.nombre AS proveedor,
+        pr.id AS proveedor_id,
+        FROM_UNIXTIME(cm.created_at) AS fecha,
+        FROM_UNIXTIME(cm.fecha_salida) AS fecha_salida
+    FROM compra AS cm   
+    JOIN proveedor AS pr ON pr.id = cm.proveedor_id
+    WHERE cm.`status` = 40
+    AND FROM_UNIXTIME(cm.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+    ORDER BY id DESC;
+    """
+    return sql
 
--- PROVEEDOR
-pr.nombre AS proveedor,
-pr.id AS proveedor_id,
-
-
--- FECHA 
-FROM_UNIXTIME(cm.created_at) AS fecha,
-FROM_UNIXTIME(cm.fecha_salida) AS fecha_salida
-FROM compra AS cm   
-JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-WHERE cm.`status` = 40
-ORDER BY id DESC ;
-
-
-"""
-
-CREDITO_PROVEDOR = """
-SELECT
- -- CREDITO 
- c.id AS credito_id,
- round(c.monto,2) AS monto_credito,
- -- COMPRA
- c.compra_id,
- cm.total AS moto_compra, 
- -- PROOVEDOR 
- pr.nombre AS proveedor,
- pr.id AS id_proveedor,
- c.`status`, c.tipo,
-
--- FECHA 
-FROM_UNIXTIME(c.created_at) AS fecha
-
-FROM credito AS c
-INNER JOIN compra AS cm ON cm.id = c.compra_id
-INNER  JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-WHERE c.`status` != 20
-
-"""
-
-ABONO_PROVEDOR = """
-SELECT
-ca.id AS credito_abono_id, 
-ca.credito_id,
- ca.cantidad,
- -- ca.`status`,
- -- ca.token_pay,
- c.compra_id,
- -- cm.proveedor_id,
--- c.tipo AS tipo,
-upper(pr.nombre) AS proveedor,
-FROM_UNIXTIME(ca.created_at) AS fecha
-FROM credito_abono AS ca
-JOIN credito AS c ON c.id = ca.credito_id
-JOIN compra AS cm ON cm.id = c.compra_id
-JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-WHERE ca.`status` = 10
- -- WHERE c.tipo = 20;
-"""
+def CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
+    fecha_inicio = f"{año_ini}-{mes_ini:02d}-{dia_ini:02d}"
+    fecha_fin = f"{año_fin}-{mes_fin:02d}-{dia_fin:02d}"
+    
+    sql = f"""
+    SELECT
+        c.id AS credito_id,
+        round(c.monto, 2) AS monto_credito,
+        c.compra_id,
+        cm.total AS moto_compra,
+        pr.nombre AS proveedor,
+        pr.id AS id_proveedor,
+        c.`status`, c.tipo,
+        FROM_UNIXTIME(c.created_at) AS fecha
+    FROM credito AS c
+    INNER JOIN compra AS cm ON cm.id = c.compra_id
+    INNER JOIN proveedor AS pr ON pr.id = cm.proveedor_id
+    WHERE c.`status` != 20
+    AND FROM_UNIXTIME(c.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+    """
+    return sql
 
 
-
+def ABONO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
+    fecha_inicio = f"{año_ini}-{mes_ini:02d}-{dia_ini:02d}"
+    fecha_fin = f"{año_fin}-{mes_fin:02d}-{dia_fin:02d}"
+    
+    sql = f"""
+    SELECT
+        ca.id AS credito_abono_id, 
+        ca.credito_id,
+        ca.cantidad,
+        upper(pr.nombre) AS proveedor,
+        FROM_UNIXTIME(ca.created_at) AS fecha
+    FROM credito_abono AS ca
+    JOIN credito AS c ON c.id = ca.credito_id
+    JOIN compra AS cm ON cm.id = c.compra_id
+    JOIN proveedor AS pr ON pr.id = cm.proveedor_id
+    WHERE ca.`status` = 10
+    AND FROM_UNIXTIME(ca.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+    """
+    return sql
 
 
 PROOVEDORES_LIST = """

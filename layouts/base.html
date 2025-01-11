@@ -6,7 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}ARROLLO |{% endblock %}</title>
+    <title>{% block title %}DASHBOARD{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://erp.pescadosymariscosarroyo.com/web/img/logo.png">
 
     <!-- CSS Principal -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -27,6 +29,15 @@
 </head>
 
 <style>
+    .table-responsive {
+    max-height: 400px; /* Ajusta el valor según sea necesario */
+    overflow: auto;
+}
+
+.main-responsive {
+    max-height: 600px; /* Ajusta el valor según sea necesario */
+   
+}
         .datepicker {
         border: 2px solid #ddd;
         border-radius: 8px;
@@ -142,88 +153,94 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container-fluid">
-            <!-- Brand -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'ventas_index' %}">
-                <i class="fas fa-store me-2"></i> ARROYO
-            </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid">
+        <!-- Brand  ventas_index-->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'ventas_mes' %}">
+            <img src="https://erp.pescadosymariscosarroyo.com/web/img/logo.png" alt="Logo" width="40" height="40" class="me-2 rounded-circle">
+            <span class="fw-bold">ARROYO</span>
+        </a>
 
-            <!-- Toggle button for mobile view -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <!-- Toggle button for mobile view -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'ventas_mes' %}">
-                            <i class="fas fa-chart-line"></i> Ingresos por Mes
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="ventasDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-box"></i> Ventas de Productos
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="ventasDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'producto_detalle' %}">VENTAS GENERAL</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-box"></i> Compras
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="comprasDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'compras' %}"><i class="fas fa-info-circle"></i>
-                                    Detalles de Compras</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'compras_proveedor' %}"><i
-                                        class="fas fa-chart-bar"></i> Reporte de Compras proveedor</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-users"></i> CLIENTES
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="comprasDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'creditos_cliente' %}">
-                                    <i class="fas fa-coins"></i> CRÉDITOS
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+            <ul class="navbar-nav">
+                <!--
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ventas_mes' %}">
+                        <i class="fas fa-file-invoice-dollar"></i> Ingresos por Mes
+                    </a>
+                </li>
+                -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="ventasDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-shopping-cart"></i> Ventas de Productos
 
 
-                </ul>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="ventasDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'producto_detalle' %}">PRODUCTOS MAS VENDIDOS</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'producto_menos_vendidos' %}">PRODUCTOS MENOS VENDIDOS</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-box-open"></i> Compras
 
-                <!-- Right-aligned Links (e.g., User Profile)
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Perfil</a>
-                    </li>
-                </ul> -->
-            </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="comprasDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'compras' %}">
+                                <i class="fas fa-info-circle"></i> Detalles de Compras
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'compras_proveedor' %}">
+                                <i class="fas fa-chart-bar"></i> Reporte de Compras Proveedor
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="clientesDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-users"></i> Clientes
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="clientesDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'creditos_cliente' %}">
+                                <i class="fas fa-coins"></i> Créditos
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- Right-aligned Links (e.g., User Profile) -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Perfil</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <!-- Main Content -->
     <div class="container-fluid">
-        <div class="row mb-4">
-            <div class="col-md-12 text-center">
-                <h1 class="display-4">PESCADOS Y MARISCOS ARROYO</h1>
-            </div>
-        </div>
+        
 
         {% block content %}
         <!-- Contenido específico de cada vista -->
@@ -233,9 +250,10 @@
     <!-- Footer -->
     <footer class="footer mt-auto py-3">
         <div class="container">
-            <span>© 2024 <a href="#">lerco</a>. Todos los derechos reservados.</span>
+            <span>© {% now "Y" %} <a href="https://pescadosymariscosarroyo.com/">PESCADOS Y MARISCOS ARROYO</a>. Todos los derechos reservados.</span>
         </div>
     </footer>
+    
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -33,6 +33,12 @@ DIC_MESES = [(1, 'Enero'), (2, 'Febrero'), (3, 'Marzo'), (4, 'Abril'),
 MESES =  [x.upper() for x in ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']]
 DIAS_SEMANA = [_.upper() for _ in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']]
 
+def obtener_lista_de_anos():
+    # Año actual
+    año_actual = datetime.now().year
+    # Generar lista de años desde 2021 hasta el año actual
+    return list(range(2021, año_actual + 1))
+
 def add_columns_date_spanish(df):
   if 'fecha' in df.columns:
     df['fecha']      = pd.to_datetime(df['fecha'])
@@ -57,7 +63,7 @@ def add_columns_date_spanish(df):
           CONSULTAS SQL
 =====================================================
 """
-def consulta_sql(sql = VENTAS):
+def consulta_sql(sql = VENTAS()):
     
     with connection.cursor() as cursor:
         cursor.execute(sql)
@@ -78,9 +84,9 @@ def consulta_sql(sql = VENTAS):
 
 def ventas_mes_df(anio,mes):
     # Consultar datos de ventas, créditos y abonos
-    df_ventas = consulta_sql()
-    df_creditos = consulta_sql(CREDITO)
-    df_abonos = consulta_sql(ABONO)
+    df_ventas = consulta_sql(VENTAS(año=anio, mes=mes))
+    df_creditos = consulta_sql(CREDITO(año=anio, mes=mes))
+    df_abonos = consulta_sql(ABONO(año=anio, mes=mes))
     COLUMNA_GROUP = 'month'
     
     # Agregar columnas de fecha en español
@@ -114,11 +120,11 @@ def ventas_mes_df(anio,mes):
     
     # Crear la gráfica con barras y líneas de tendencia
     list_columns_df = ['ventas', 'creditos', 'pagos']
-    lis_columns_name = ['Ventas', 'Créditos', 'Pagos']
+    lis_columns_name = ['Ventas', 'C.P', 'Pagos']
     title =""# f'Ingresos Mensuales de {anio}'
     xlabel = 'Meses'
     ylabel = 'Monto Total en Pesos'
-    grafica = grafica_plotly(data_mensual,list_columns_df,lis_columns_name,'mes',title,xlabel,ylabel,prefijo_before='$')
+    grafica = grafica_plotly(data_mensual,list_columns_df,lis_columns_name,'mes',title,xlabel,ylabel,prefijo_before='$',add_trendline=False)
     list_columns_df = ['cre_ventas', 'cre_creditos', 'cre_pagos']
     lis_columns_name = ['crecimirnto en Ventas', 'crecimiento en Créditos', 'crecimiento en Créditos Pagos']
     title = ""# f"CRECIMIeNTO ANUAL EN COMPRAS, CREDITOS Y ABONOS en el año {anio}"
@@ -147,7 +153,7 @@ def ventas_mes_df(anio,mes):
     del plot_mes_dia['plot']
     return {
         'ingresos': INGRESOS,
-        'anios': df_ventas['year'].unique(),
+        'anios': obtener_lista_de_anos(),
         'meses': DIC_MESES,
         'anio_seleccionado': anio,
         'mes_seleccionado': mes,
@@ -191,7 +197,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
 
     # Agregar barras de ventas, créditos y pagos
     fig.add_trace(go.Bar(
-        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=data_diaria['dia'].astype(str) ,#+ ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['ventas'],
         name='Ventas',
         marker_color=COLORS[0],
@@ -200,7 +206,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
     ))
 
     fig.add_trace(go.Bar(
-        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=data_diaria['dia'].astype(str),# + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['creditos'],
         name='Créditos',
         marker_color=COLORS[1],
@@ -209,7 +215,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
     ))
 
     fig.add_trace(go.Bar(
-        x=data_diaria['dia'].astype(str) + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=data_diaria['dia'].astype(str),# + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['pagos'],
         name='Pagos',
         marker_color=COLORS[2],
@@ -219,7 +225,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
 
     # Configurar el layout
     fig.update_layout(
-        title=f'Ventas, Créditos y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
+        title=f'Ventas, C.P y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
         xaxis_title='DÍAS',
         yaxis_title='Monto Total en Pesos'.upper(),
         barmode='group',  # Agrupar las barras
@@ -261,8 +267,8 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
 def vetas_totales():
     # Obtener datos de ventas, créditos y abonos
     df_ventas = consulta_sql()
-    df_creditos = consulta_sql(CREDITO)
-    df_abonos = consulta_sql(ABONO)
+    df_creditos = consulta_sql(CREDITO())
+    df_abonos = consulta_sql(ABONO())
     
     # Agregar columnas de fecha en español
     df_ventas = add_columns_date_spanish(df_ventas)
@@ -420,16 +426,22 @@ def vetas_totales():
         VENTAS POR PRODUCTO
 ====================================================
 """
-def venta_detalle_producto():
-    TOP = 10
-    df_vD = consulta_sql(VENTA_DETALLE)
+def venta_detalle_producto(fecha_inicio=None, fecha_fin=None, cantidad=50,is_top=True):
+    TOP = cantidad
+    df_vD = consulta_sql(VENTA_DETALLE(fecha_inicio, fecha_fin))
+    
     df_vD['fecha'] = pd.to_datetime(df_vD['fecha'])
     df_vD['año'] = df_vD['fecha'].dt.year
     df_vD['mes'] = df_vD['fecha'].dt.month
 
     # Identificar los productos más vendidos
     productos_mas_vendidos = df_vD.groupby('producto')['cantidad'].sum().sort_values(ascending=False)
-    TOP_PRODUCTO = productos_mas_vendidos.head(TOP).index.tolist()
+    if is_top:
+        TOP_PRODUCTO = productos_mas_vendidos.head(TOP).index.tolist()
+    else:
+        TOP_PRODUCTO = productos_mas_vendidos.tail(TOP).index.tolist()
+    
+    
     df_top = df_vD[df_vD['producto'].isin(TOP_PRODUCTO)]
     
     # Agrupar por año, mes y producto para calcular las ventas
@@ -463,8 +475,8 @@ def venta_detalle_producto():
         x='mes',
         y=TOP_PRODUCTO,
         nombres=TOP_PRODUCTO,
-        colores=COLORS,
-        titulo=f'Top {TOP} Productos Más Vendidos',
+        colores=COLORS if len(TOP_PRODUCTO) <= len(COLORS) else COLORS[:len(TOP_PRODUCTO)],
+        titulo="",#f'Top {TOP} Productos Más Vendidos',
         x_titulo='Mes',
         y_titulo='Cantidad de Ventas',
         es_apilado=False
@@ -478,8 +490,8 @@ def venta_detalle_producto():
     PLOT_PIE = crear_grafico_pie(
         labels=TOP_PRODUCTO,
         values=productos_mas_vendidos[TOP_PRODUCTO],
-        colores=COLORS[:TOP],
-        titulo='Distribución de Ventas de los Productos Más Vendidos'
+        colores=COLORS if len(TOP_PRODUCTO) <= len(COLORS) else COLORS[:len(TOP_PRODUCTO)],
+        titulo=""#'Distribución de Ventas de los Productos Más Vendidos'
     )
     # Preparar los datos para el contexto, organizando por producto
     productos_data = {
@@ -502,9 +514,13 @@ def venta_detalle_producto():
 
     # Ordenar por total vendido
     productos_estadisticas = productos_estadisticas.sort_values(by='total_vendido', ascending=False)
+    
+    
 
     # Formatear números
     for col in ['total_vendido', 'promedio', 'desviacion_estandar']:
+        productos_estadisticas[col] = productos_estadisticas[col].fillna(0)
+        
         productos_estadisticas[col] = productos_estadisticas[col].apply(lambda x: f"{x:,.2f}")
 
   
@@ -545,11 +561,11 @@ def venta_detalle_producto():
 """
 
 def compras_credito_abonos(anio,mes):
-    df_compras   = consulta_sql(COMPRAS_PROVEDOR_C)
+    df_compras   = consulta_sql(COMPRAS_PROVEDOR_C(anio,mes,dia_ini=1,dia_fin=31,año_fin=anio,mes_fin=mes))
     df_compras   = add_columns_date_spanish(df_compras)
-    creditos     = consulta_sql(CREDITO_PROVEDOR)
+    creditos     = consulta_sql(CREDITO_PROVEDOR(anio,mes,dia_ini=1,dia_fin=31,año_fin=anio,mes_fin=mes))
     creditos     = add_columns_date_spanish(creditos)
-    abonos       = consulta_sql(ABONO_PROVEDOR)
+    abonos       = consulta_sql(ABONO_PROVEDOR(anio,mes,dia_ini=1,dia_fin=31,año_fin=anio,mes_fin=mes))
     abonos       = add_columns_date_spanish(abonos)
     
     
@@ -580,7 +596,7 @@ def compras_credito_abonos(anio,mes):
 
     # Agregar barras de ventas, créditos y pagos
     fig.add_trace(go.Bar(
-        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=merge_day['dia'].astype(str),# + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=merge_day['compras'],
         name='COMPRAS',
         marker_color=COLORS[0],
@@ -589,16 +605,16 @@ def compras_credito_abonos(anio,mes):
     ))
 
     fig.add_trace(go.Bar(
-        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=merge_day['dia'].astype(str),# + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=merge_day['creditos'],
-        name='Créditos',
+        name='C.P',
         marker_color=COLORS[1],
         text=merge_day['creditos'].apply(lambda x: f"${x:,.0f}"),
         textposition='auto'
     ))
 
     fig.add_trace(go.Bar(
-        x=merge_day['dia'].astype(str) + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
+        x=merge_day['dia'].astype(str),# + ' (' + merge_day['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=merge_day['abonos'],
         name='abonos',
         marker_color=COLORS[2],
@@ -608,7 +624,7 @@ def compras_credito_abonos(anio,mes):
 
     # Configurar el layout
     fig.update_layout(
-        title=f'Ventas, Créditos y ABONOS en {MESES[mes - 1]} {anio} por Día'.upper(),
+        title=f'Ventas, C.P y ABONOS en {MESES[mes - 1]} {anio} por Día'.upper(),
         xaxis_title='DÍAS',
         yaxis_title='Monto Total en Pesos'.upper(),
         barmode='group',  # Agrupar las barras
@@ -660,7 +676,7 @@ def compras_credito_abonos(anio,mes):
     #====================================================
     # Crear la gráfica de barras y líneas de tendencia
     list_columns_df = ['compras', 'creditos', 'abonos']
-    lis_columns_name = ['COMPRAS', 'CRÉDITOS', 'PAGOS']
+    lis_columns_name = ['COMPRAS', 'C.P', 'PAGOS']
     title =""# f'Ingresos Mensuales de {anio}'
     xlabel = 'Años'
     ylabel = 'Monto Total en Pesos'
@@ -692,7 +708,7 @@ def compras_credito_abonos(anio,mes):
     main_mes['mes'] = main_mes['mes'].apply(lambda x: MESES[x - 1])  # Convertir número de mes a nombre
 
     list_columns_df = ['compras', 'creditos', 'abonos']
-    lis_columns_name = ['COMPRAS', 'CRÉDITOS', 'PAGOS']
+    lis_columns_name = ['COMPRAS', 'C.P', 'PAGOS']
     title =""# f'Ingresos Mensuales de {anio}'
     xlabel = 'MESES'
     # Generar el gráfico HTML
@@ -700,7 +716,7 @@ def compras_credito_abonos(anio,mes):
     
     
     
-    INGRESOS = {'anios': df_compras['year'].unique(),
+    INGRESOS = {'anios': obtener_lista_de_anos(),
         'anio_seleccionado': anio,
          'plot_diario': grafica_diario,
         'sum_compras': f"${sum_compras:,.0f}",
@@ -724,9 +740,25 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
     
     
     df_cp = consulta_sql(COMPRAS_PROVEDOR)
-    dc_ab = consulta_sql(ABONO_PROVEDOR)
-    dc_cr = consulta_sql(CREDITO_PROVEDOR)
-    dc_cpr  = consulta_sql(COMPRAS_PROVEDOR_C)
+     # Convertir las fechas a objetos datetime para obtener el año, mes y día
+    date_ini = datetime.strptime(date_ini, '%Y-%m-%d')  # Asumiendo el formato 'YYYY-MM-DD'
+    date_fin = datetime.strptime(date_fin, '%Y-%m-%d')  # Asumiendo el formato 'YYYY-MM-DD'
+    
+    # Obtener el año, mes y día de las fechas de inicio y fin
+    año_ini = date_ini.year
+    mes_ini = date_ini.month
+    dia_ini = date_ini.day
+    
+    año_fin = date_fin.year
+    mes_fin = date_fin.month
+    dia_fin = date_fin.day
+    
+    # Pasar las fechas a las funciones correspondientes
+    dc_ab = consulta_sql(ABONO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin))
+    dc_cr = consulta_sql(CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin))
+    dc_cpr  = consulta_sql(COMPRAS_PROVEDOR_C(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin))
+    
+    
     
     dc_ab['proveedor']  = dc_ab['proveedor'].str.upper().str.strip().str.replace('_', ' ')
     dc_cr['proveedor']  = dc_cr['proveedor'].str.upper().str.strip().str.replace('_', ' ')
@@ -871,7 +903,7 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
         filtro['por_pagar'].values[0]
     ]
     
-    categorias = ['Total en Compras', 'Monto en Crédito', 'Monto en Abono', 'Por Pagar']
+    categorias = ['Total en Compras', 'POR PAGAR', 'Monto en Abono', 'Por Pagar']
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=categorias,
