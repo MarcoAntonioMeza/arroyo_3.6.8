@@ -1,5 +1,7 @@
 {# templates/base.html #}
 {% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,239 +11,122 @@
     <title>{% block title %}DASHBOARD{% endblock %}</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://erp.pescadosymariscosarroyo.com/web/img/logo.png">
+    
 
-    <!-- CSS Principal -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
     <!-- Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
 
-
-
-
 </head>
 
-<style>
-    .table-responsive {
-    max-height: 400px; /* Ajusta el valor según sea necesario */
-    overflow: auto;
-}
 
-.main-responsive {
-    max-height: 600px; /* Ajusta el valor según sea necesario */
-   
-}
-        .datepicker {
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 1rem;
-        background-color: #f9f9f9;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    .datepicker:focus {
-        border-color: #007bff;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-    }
-
-    .form-label {
-        font-size: 1rem;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-    /* Estilo para los contenedores de los inputs */
-    .input-container {
-        position: relative;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .input-container .datepicker-icon {
-        position: absolute;
-        top: 50%;
-        right: 15px;
-        transform: translateY(-50%);
-        color: #007bff;
-        font-size: 18px;
-    }
-    .card {
-        background-color: #343a40;
-        /* Fondo de tarjeta oscuro */
-        border: none;
-        border-radius: 12px;
-        transition: transform 0.2s ease-in-out;
-    }
-
-    body {
-        background-color: #212529;
-        /* Fondo oscuro */
-        color: #f8f9fa;
-        /* Texto claro */
-        font-family: 'Roboto', sans-serif;
-        text-transform: uppercase;
-    }
-
-    .select2-container--custom .select2-selection {
-        background-color: #343a40;
-        /* Fondo oscuro */
-        color: #f8f9fa;
-        /* Texto claro */
-        border: 1px solid #495057;
-        /* Borde oscuro */
-        border-radius: 0.25rem;
-        /* Bordes redondeados */
-        padding: 0.375rem 0.75rem;
-    }
-
-    .select2-container--custom .select2-selection__placeholder {
-        color: #adb5bd;
-        /* Placeholder claro */
-    }
-
-    .select2-container--custom .select2-selection__rendered {
-        color: #f8f9fa;
-        /* Texto claro */
-    }
-
-    .select2-container--custom .select2-selection__arrow {
-        color: #f8f9fa;
-        /* Flecha clara */
-    }
-
-    .select2-container--custom .select2-dropdown {
-        background-color: #343a40;
-        /* Fondo oscuro */
-        color: #f8f9fa;
-        /* Texto claro */
-        border: 1px solid #495057;
-        /* Borde oscuro */
-        max-height: 200px;
-        /* Altura máxima del dropdown */
-        overflow-y: auto;
-        /* Scroll cuando exceda la altura */
-    }
-
-    .select2-container--custom .select2-results__option {
-        color: #f8f9fa;
-        /* Texto claro */
-    }
-
-    .select2-container--custom .select2-results__option--highlighted {
-        background-color: #495057;
-        /* Resaltado */
-        color: #f8f9fa;
-        /* Texto claro */
-    }
-</style>
 
 
 
 <body>
     <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container-fluid">
-        <!-- Brand  ventas_index-->
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'ventas_mes' %}">
-            <img src="https://erp.pescadosymariscosarroyo.com/web/img/logo.png" alt="Logo" width="40" height="40" class="me-2 rounded-circle">
-            <span class="fw-bold">ARROYO</span>
-        </a>
+    <nav class="navbar navbar-expand-lg custom-navbar shadow-sm">
 
-        <!-- Toggle button for mobile view -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <!-- Navbar Links -->
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <ul class="navbar-nav">
-                <!--
+        <div class="container-fluid">
+            <!-- Brand  ventas_index-->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'ventas_mes' %}">
+                <img src="https://erp.pescadosymariscosarroyo.com/web/img/logo.png" alt="Logo" width="40" height="40"
+                    class="me-2 rounded-circle">
+                <span class="fw-bold">ARROYO</span>
+            </a>
+
+            <!-- Toggle button for mobile view -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav">
+                    <!--
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'ventas_mes' %}">
                         <i class="fas fa-file-invoice-dollar"></i> Ingresos por Mes
                     </a>
                 </li>
                 -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="ventasDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-shopping-cart"></i> Ventas de Productos
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="ventasDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-shopping-cart"></i> Ventas de Productos
 
 
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="ventasDropdown">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'producto_detalle' %}">PRODUCTOS MAS VENDIDOS</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'producto_menos_vendidos' %}">PRODUCTOS MENOS VENDIDOS</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-box-open"></i> Compras
+                        </a>
+                        <ul class="dropdown-menu " aria-labelledby="ventasDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'producto_detalle' %}">PRODUCTOS MAS VENDIDOS</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'producto_menos_vendidos' %}">PRODUCTOS MENOS
+                                    VENDIDOS</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="comprasDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-box-open"></i> Compras
 
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="comprasDropdown">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'compras' %}">
-                                <i class="fas fa-info-circle"></i> Detalles de Compras
-                            </a>
+                        </a>
+                        <ul class="dropdown-menu " aria-labelledby="comprasDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'compras' %}">
+                                    <i class="fas fa-info-circle"></i> Detalles de Compras
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'compras_proveedor' %}">
+                                    <i class="fas fa-chart-bar"></i> Reporte de Compras Proveedor
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="clientesDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-users"></i> Clientes
+                        </a>
+                        <ul class="dropdown-menu " aria-labelledby="clientesDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'creditos_cliente' %}">
+                                    <i class="fas fa-coins"></i> Créditos
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <!--<li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Perfil</a>
+                    </li>-->
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{% url 'compras_proveedor' %}">
-                                <i class="fas fa-chart-bar"></i> Reporte de Compras Proveedor
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="clientesDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-users"></i> Clientes
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="clientesDropdown">
-                        <li>
-                            <a class="dropdown-item" href="{% url 'creditos_cliente' %}">
-                                <i class="fas fa-coins"></i> Créditos
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-
-            <!-- Right-aligned Links (e.g., User Profile) -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> Perfil</a>
-                </li>
-            </ul>
+                    {% endif %}
+                </ul>
+                
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 
     <!-- Main Content -->
-    <div class="container-fluid">
-        
-
+    <div class="container-fluid my-3">
         {% block content %}
         <!-- Contenido específico de cada vista -->
         {% endblock %}
@@ -250,10 +135,11 @@
     <!-- Footer -->
     <footer class="footer mt-auto py-3">
         <div class="container">
-            <span>© {% now "Y" %} <a href="https://pescadosymariscosarroyo.com/">PESCADOS Y MARISCOS ARROYO</a>. Todos los derechos reservados.</span>
+            <span>© {% now "Y" %} <a href="https://pescadosymariscosarroyo.com/">PESCADOS Y MARISCOS ARROYO</a>. Todos
+                los derechos reservados.</span>
         </div>
     </footer>
-    
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -265,8 +151,9 @@
 
     <!-- Script para Bootstrap Datepicker -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
-<!-- Traducción Bootstrap Datepicker en español -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.es.min.js"></script>
+    <!-- Traducción Bootstrap Datepicker en español -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.es.min.js"></script>
 
     {% block extra_js %}
     <script>

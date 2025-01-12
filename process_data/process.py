@@ -1,12 +1,7 @@
 import time
 import datetime
 import pandas as pd
-import pytz
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import matplotlib.dates as mdates
-import matplotlib.font_manager as font_manager
-import numpy as np
+
 import locale
 import plotly.express as px
 import matplotlib.ticker as mtick
@@ -17,9 +12,35 @@ from .sql import *
 pd.options.display.float_format = '{:,.2f}'.format
 
 
-from django.db import connection
+from django.db import connections
 
-COLORS = ['#007bff', '#17a2b8', '#28a745', '#20c997', '#00bcd4', '#1e90ff', '#00fa9a', '#2e8b57', '#66cdaa', '#00ced1']
+
+
+#$COLORS_ = ['#007bff', '#17a2b8', '#28a745', '#20c997', '#00bcd4', '#1e90ff', '#00fa9a', '#2e8b57', '#66cdaa', '#00ced1']
+COLORS = ['#006994', '#87CEEB', '#20c997', '#00bcd4', '#004d66', '#1e90ff', '#00fa9a', '#2e8b57', '#66cdaa', '#3cb371']
+#COLORS = [
+#    '#006994',  # Azul profundo (océano)
+#    '#87CEEB',  # Azul cielo (frescor)
+#    '#20c997',  # Verde menta (marina)
+#    '#00bcd4',  # Azul celeste (agua)
+#    '#004d66',  # Azul oscuro (profundidad)
+#    '#1e90ff',  # Azul brillante (frescura)
+#    '#00fa9a',  # Verde aqua (fresco)
+#    '#2e8b57',  # Verde marino (naturaleza)
+#    '#66cdaa',  # Verde azulado claro (marino)
+#    '#3cb371',  # Verde pasto (natural)
+#    '#ff6347',  # Tomate (rojo cálido, contrastante)
+#    '#f0ad4e',  # Amarillo dorado (cálido)
+#    '#d9534f',  # Rojo coral (vibrante)
+#    '#5bc0de',  # Azul claro (transparente)
+#    '#ffc107',  # Amarillo intenso (energético)
+#    '#6c757d',  # Gris oscuro (neutral)
+#    '#28a745',  # Verde hierba (natural)
+#    '#f8f9fa',  # Blanco suave (resaltado claro)
+#    '#343a40',  # Gris oscuro (fondo oscuro)
+#    '#17a2b8',  # Azul agua marina (relajante)
+#]
+
 MESES_ES = {
     1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
     5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
@@ -63,17 +84,26 @@ def add_columns_date_spanish(df):
           CONSULTAS SQL
 =====================================================
 """
-def consulta_sql(sql = VENTAS()):
+def consulta_sql(sql=VENTAS(), db_alias='erp'):
+    """
+    Ejecuta una consulta SQL en una base de datos específica y retorna un DataFrame.
     
-    with connection.cursor() as cursor:
+    Args:
+        sql (str): La consulta SQL a ejecutar.
+        db_alias (str): El alias de la base de datos en el diccionario DATABASES.
+    
+    Returns:
+        pd.DataFrame: Los resultados de la consulta en formato DataFrame.
+    """
+    # Usar la conexión de la base de datos especificada
+    with connections[db_alias].cursor() as cursor:
         cursor.execute(sql)
         columnas = [col[0] for col in cursor.description]
         resultados = cursor.fetchall()
 
+    # Convertir los resultados a DataFrame
     df = pd.DataFrame(resultados, columns=columnas)
     return df
-
-
 
 
 """
@@ -184,7 +214,9 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
     data_diaria = data_diaria.fillna(0)
 
     # Agregar el día de la semana en formato de texto
-    DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+   
+    DIAS_SEMANA = [x.upper() for x in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']]
+
     data_diaria['dia_semana'] = pd.to_datetime({'year': ANIO, 'month': MES, 'day': data_diaria['dia']}).dt.weekday
     data_diaria['dia_semana'] = data_diaria['dia_semana'].apply(lambda x: DIAS_SEMANA[x])
     
@@ -200,7 +232,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         x=data_diaria['dia'].astype(str) ,#+ ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['ventas'],
         name='Ventas',
-        marker_color=COLORS[0],
+        marker_color=COLORS[2],
         text=data_diaria['ventas'].apply(lambda x: f"${x:,.0f}"),
         textposition='auto'
     ))
@@ -209,7 +241,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         x=data_diaria['dia'].astype(str),# + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['creditos'],
         name='Créditos',
-        marker_color=COLORS[1],
+        marker_color=COLORS[5],
         text=data_diaria['creditos'].apply(lambda x: f"${x:,.0f}"),
         textposition='auto'
     ))
@@ -218,12 +250,12 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         x=data_diaria['dia'].astype(str),# + ' (' + data_diaria['dia_semana'] + ')',  # Mostrar día y día de la semana
         y=data_diaria['pagos'],
         name='Pagos',
-        marker_color=COLORS[2],
+        marker_color=COLORS[1],
         text=data_diaria['pagos'].apply(lambda x: f"${x:,.0f}"),
         textposition='auto'
     ))
-
-    # Configurar el layout
+# Configurar el layout con colores complementarios
+    # Configurar el layout con un estilo mejorado para la visibilidad del texto
     fig.update_layout(
         title=f'Ventas, C.P y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
         xaxis_title='DÍAS',
@@ -231,21 +263,31 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
         barmode='group',  # Agrupar las barras
         xaxis_tickmode='linear',  # Mostrar todos los días del mes
         xaxis_tickangle=-45,  # Rotación de etiquetas en el eje x
-        template='plotly_dark',
+        template='plotly',  # Tema predeterminado de Plotly
         showlegend=True,
         margin=dict(l=40, r=40, t=60, b=60),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
+
+    # Configuración de la leyenda con colores adecuados
     fig.update_layout(legend=dict(
-        font=dict(color='#f8f9fa'),
+        font=dict(color='#004d66'),  # Texto de la leyenda en azul oscuro
         orientation="h",
         yanchor="top",
         y=1.1,
         xanchor="center",
         x=0.5
     ))
+
+
     return{
         'plot': plot(fig, include_plotlyjs=True, output_type='div'),
         'sum_ventas': f"${sum_ventas:,.0f}",
@@ -630,15 +672,21 @@ def compras_credito_abonos(anio,mes):
         barmode='group',  # Agrupar las barras
         xaxis_tickmode='linear',  # Mostrar todos los días del mes
         xaxis_tickangle=-45,  # Rotación de etiquetas en el eje x
-        template='plotly_dark',
+        template='plotly',
         showlegend=True,
         margin=dict(l=40, r=40, t=60, b=60),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
     fig.update_layout(legend=dict(
-        font=dict(color='#f8f9fa'),
+        font=dict(color='#004d66'),
         orientation="h",
         yanchor="top",
         y=1.1,
@@ -872,13 +920,19 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
         template='plotly_dark',
         showlegend=True,
         margin=dict(l=40, r=40, t=60, b=60),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
     # Configurar la leyenda
     fig.update_layout(legend=dict(
-        font=dict(color='#f8f9fa'),
+        font=dict(color='#004d66'),
         orientation="h",
         yanchor="top",
         y=1.1,
@@ -922,16 +976,22 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
         yaxis_tickformat=",",  # Formato para miles
         barmode='group',
         xaxis_tickangle=-45,
-        template='plotly_dark',
+        template='plotly',
         showlegend=True,
         margin=dict(l=40, r=40, t=60, b=60),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
     # Configurar la leyenda
     fig.update_layout(legend=dict(
-        font=dict(color='#f8f9fa'),
+        font=dict(color='#004d66'),
         orientation="h",
         yanchor="top",
         y=1.1,
@@ -1013,13 +1073,22 @@ def get_creditos_abonos_by_cliente(cliente_id, fecha_inicio, fecha_fin, tipo_gra
         # Personalizar diseño
         fig.update_layout(
             title="Distribución de Créditos, Abonos y Monto por Pagar",
-            template='plotly_dark',
-            font=dict(color='#f8f9fa'),
-            plot_bgcolor='#343a40',
-            paper_bgcolor='#343a40',
-            showlegend=True,
+            template='plotly',
             margin=dict(l=40, r=40, t=60, b=60),
+            font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+            plot_bgcolor='#f0f8ff',  # Fondo azul suave
+            paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+            xaxis=dict(
+                tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+            ),
+            yaxis=dict(
+                tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+            )
         )
+        fig.update_layout(legend=dict(
+        font=dict(color='#004d66'),  # Texto de la leyenda en azul oscuro
+       
+        ))
         
         # Convertir gráfica a HTML
         grafica_html = fig.to_html(full_html=False)
@@ -1073,17 +1142,23 @@ def grafica_plotly(df,list_columns_df,list_name_columns,xColumnName,title,xLabel
         yaxis_title=yLabel.upper(),
         barmode='group',
         xaxis_tickangle=-45,
-        template='plotly_dark',
+        template='plotly',
         showlegend=True,
         margin=dict(l=40, r=40, t=60, b=60),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
     
     # Configurar la leyenda
     fig.update_layout(legend=dict(
-        font=dict(color='#f8f9fa'),
+        font=dict(color='#004d66'),
         orientation="h",
         yanchor="top",
         y=1.1,
@@ -1191,16 +1266,22 @@ def crear_grafico_barras(data, x, y, nombres, colores, titulo, x_titulo, y_titul
         yaxis_title=y_titulo,
         
         barmode='stack' if es_apilado else 'group',
-        template='plotly_dark',
+        template='plotly',
         showlegend=True,
         margin=dict(l=40, r=40, t=40, b=40),
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40'
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
 
-    fig.update_xaxes(title_font=dict(color='#f8f9fa'), tickfont=dict(color='#f8f9fa'))
-    fig.update_yaxes(title_font=dict(color='#f8f9fa'), tickfont=dict(color='#f8f9fa'))
+    fig.update_xaxes(title_font=dict(color='#004d66'), tickfont=dict(color='#004d66'))
+    fig.update_yaxes(title_font=dict(color='#004d66'), tickfont=dict(color='#004d66'))
     
     return plot(fig, include_plotlyjs=True, output_type='div')
 
@@ -1224,11 +1305,26 @@ def crear_grafico_pie(labels, values, colores, titulo):
 
     fig.update_layout(
         title=titulo,
-        template='plotly_dark',
-        font=dict(color='#f8f9fa'),
-        plot_bgcolor='#343a40',
-        paper_bgcolor='#343a40'
+        template='plotly',
+        font=dict(color='#004d66'),  # Color de texto en azul oscuro para mejor contraste
+        plot_bgcolor='#f0f8ff',  # Fondo azul suave
+        paper_bgcolor='#e1f1f6',  # Fondo azul pálido
+        xaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje X
+        ),
+        yaxis=dict(
+            tickfont=dict(color='#004d66'),  # Color de las etiquetas del eje Y
+        )
     )
+    
+    fig.update_layout(legend=dict(
+        font=dict(color='#004d66'),  # Texto de la leyenda en azul oscuro
+        #orientation="h",
+        #yanchor="top",
+        #y=1.1,
+        #xanchor="center",
+        #x=0.5
+    ))
 
     return plot(fig, include_plotlyjs=True, output_type='div')
 

@@ -2,10 +2,12 @@ import locale
 from django.utils import timezone
 from datetime import timedelta
 from datetime import date
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from process_data.process import *
 import datetime as dt
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth import authenticate, login,logout
+from django.contrib import messages 
 
 
 
@@ -185,3 +187,21 @@ def creditos_by_cliente(request):
     }
     
     return render(request, 'creditos/cliente.html', context)
+
+
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('ventas_mes')  # Redirige a la página principal o dashboard
+        else:
+            messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
+    return render(request, 'login/index.html')
+
+def logout_view(request):
+    logout(request)  # Cerrar la sesión del usuario
+    return redirect('login') 
