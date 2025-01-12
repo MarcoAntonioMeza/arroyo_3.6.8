@@ -16,6 +16,7 @@ SECRET_KEY = 'django-insecure-oh%%=*u3z#9p%h7l!s7-&3ebye+h7l&mmjix5z00b#ke^bc&^l
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+IS_DEVELOPMENT = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -67,34 +68,44 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    
-    #'erp': {
-    #    'ENGINE': 'django.db.backends.mysql',
-    #    'NAME': 'wwlerc_arroyo_data',
-    #    'USER': 'root',
-    #    'PASSWORD': '',
-    #    'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
-    #    'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
-    #},
-    'erp': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pescadosymarisco_erp',
-        'USER': 'pescadosymarisco_dash',
-        'PASSWORD': 'LS:dash*123',
-        'HOST': '162.240.78.82',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
-        'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dash_arroyo',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
-        'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+if IS_DEVELOPMENT:
+    DATABASES = {
+        'erp': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'pescadosymarisco_erp',
+            'USER': 'pescadosymarisco_dash',
+            'PASSWORD': 'LS:dash*123',
+            'HOST': '162.240.78.82',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
+            'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+        },
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'dash_arroyo',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
+            'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+        }
     }
-}
+else:
+    DATABASES = {
+        'erp': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'pescadosymarisco_erp',
+            'USER': 'pescadosymarisco_dash',
+            'PASSWORD': 'LS:dash*123',
+            'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
+            'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+        },
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'pescadosymarisco_control_dash',
+            'USER': 'pescadosymarisco_control_dash',
+            'PASSWORD': '^zb[R*(TvjwO',
+            'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'
+            'PORT': '3306',  # Este es el puerto por defecto de MySQL. Cámbialo si tu servidor usa otro.
+        }
+    }
 
 #}
 
