@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block titulo %}COMPRAS POR PROVEEDOR{% endblock %}
 {% block content %}
 
 
@@ -10,8 +11,7 @@
         <form method="get" action="{{ventas_mes}}">
             <div class="row my-3">
                 <div class="col-md-4">
-
-                    <label for="yearSelect">Selecciona proveedor:</label>
+                    <label for="yearSelect" class="form-label">Selecciona proveedor</label>
                     <select class="form-control select2" id="proveedorSelect" name="proveedor" onchange="this.form.submit()">
                         {% for prov in provedores_list.lista %}
                             <option value="{{ prov }}" {% if prov == provedores_list.select %}selected{% endif %}>
@@ -22,14 +22,16 @@
                 </div>
                 <div class="col-md-3">
                     <!-- Campo de fecha de inicio -->
-                    <label for="fechaInicio">Fecha de inicio:</label>
+                    <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de inicio:</label>
+
                     <input type="text" id="fechaInicio" name="fecha_inicio" class="form-control datepicker"
                            value="{{ fecha_inicio }}" placeholder="Selecciona la fecha">
                 </div>
                 
                 <div class="col-md-3">
                     <!-- Campo de fecha de fin -->
-                    <label for="fechaFin">Fecha de fin:</label>
+                    <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de fin:</label>
+
                     <input type="text" id="fechaFin" name="fecha_fin" class="form-control datepicker"
                            value="{{ fecha_fin }}" placeholder="Selecciona la fecha">
                 </div>
@@ -41,10 +43,11 @@
         <div class="row">
             
             <div class="col-md-12">
-                <div class="card shadow mb-4">
+                <div class="card marine-chart">
+                    <div class="card-header chart-header">
+                        CUENTAS POR PAGAR  y pagos de lo que va de operaciÓn
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-center"><i class="fas fa-chart-line"></i>  compras
-                            CUENTAS POR PAGAR  y pagos de lo que va de operacion </h5>
                         <div id="graph-container" class="mt-3">
                             <!-- Aquí se inyecta la gráfica -->
                             {{ compras.totales.plot|safe }}
@@ -52,13 +55,14 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="card shadow mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-center"><i class="fas fa-chart-line"></i>  compras,
-                            CUENTAS POR PAGAR  y pagos
+            <div class="col-md-12 mt-5">
+                <div class="card marine-chart">
+                    <div class="card-header chart-header">
+                        CUENTAS POR PAGAR  y pagos
                             
-                            de {{ fecha_inicio_str }} al {{ fecha_fin_str}}</h5>
+                        de {{ fecha_inicio_str }} al {{ fecha_fin_str}}
+                    </div>
+                    <div class="card-body">
                         <div id="graph-container" class="mt-3">
                             <!-- Aquí se inyecta la gráfica -->
                             {{ compras.totales.plot_totales|safe }}
@@ -68,11 +72,13 @@
             </div>
             
         </div>
-        <div class="row">
+        <div class="row mt-5">
             <div class="col-md-12">
-                <div class="card shadow mb-4">
+                <div class="card marine-chart">
+                    <div class="card-header chart-header">
+                        productos comprados de {{ fecha_inicio_str }} al {{ fecha_fin_str}}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-center"><i class="fas fa-chart-line"></i>productos comprados de {{ fecha_inicio_str }} al {{ fecha_fin_str}} </h5>
                         <div id="graph-container" class="mt-3">
                             <!-- Aquí se inyecta la gráfica -->
                             {{ compras.productos.plot|safe }}

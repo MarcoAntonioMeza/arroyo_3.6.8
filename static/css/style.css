@@ -1,80 +1,141 @@
+/* Estilos mejorados */
 body {
-    background: linear-gradient(to bottom, #87CEEB, #006994); /* Fondo marino */
-    color: #fff;
-    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to bottom, #e0f6ff, #87CEEB 60%, #006994);
+    font-family: 'Nunito', sans-serif;
     text-transform: uppercase;
 }
 
-/* Table responsive */
-.table-responsive {
-    max-height: 400px;
-    overflow: auto;
-    background-color: #87CEEB; /* Azul cielo */
-    color: #fff; /* Texto blanco */
-    border: 1px solid #006994; /* Azul oscuro */
-}
-
-/* Main section */
-.main-responsive {
-    max-height: 600px;
-    background-color: #006994; /* Azul profundo */
-    color: #f8f9fa; /* Texto blanco */
-}
-
-/* Datepicker */
-.datepicker {
-    border: 2px solid #006994; /* Borde azul oscuro */
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 1rem;
-    background-color: #87CEEB; /* Fondo azul cielo */
-    color: #fff; /* Texto blanco */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-.datepicker:focus {
-    border-color: #004d66; /* Borde azul más oscuro */
-    background-color: #fff; /* Fondo blanco */
-    color: #006994; /* Texto azul oscuro */
-    box-shadow: 0 0 10px rgba(0, 77, 102, 0.5);
-}
-
-.form-label {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #004d66; /* Azul oscuro */
-    margin-bottom: 8px;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-/* Contenedores de inputs */
-.input-container {
+.dashboard-header {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
     position: relative;
-    width: 100%;
-    margin-bottom: 20px;
+    overflow: hidden;
 }
 
-.input-container .datepicker-icon {
+.dashboard-header:after {
+    content: "";
     position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
-    color: #004d66; /* Azul oscuro */
-    font-size: 18px;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: url('wave-pattern.png') repeat-x;
 }
 
-/* Tarjetas */
-.card {
-    background-color: #006994; /* Azul profundo */
-    color: #f8f9fa; /* Texto blanco */
+.marine-card {
     border: none;
-    border-radius: 12px;
-    transition: transform 0.2s ease-in-out;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    backdrop-filter: blur(10px);
 }
+
+.marine-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,105,148,0.2);
+}
+
+.card-header {
+    background: rgba(0,105,148,0.15);
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.marine-stat {
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wave-progress {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #87CEEB, #006994);
+    transition: width 0.5s ease;
+}
+
+.marine-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.badge-wave {
+    background: rgba(135,206,235,0.3);
+    color: #87CEEB;
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,105,148,0.2);
+}
+
+.chart-legend .legend-item {
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-left: 10px;
+    font-size: 0.9em;
+}
+
+.legend-item.sales { background: rgba(135,206,235,0.3); color: #87CEEB; }
+.legend-item.credits { background: rgba(255,165,0,0.3); color: #FFA500; }
+.legend-item.abonos { background: rgba(46,139,87,0.3); color: #2E8B57; }
+
+.net-income {
+    text-align: center;
+    padding: 15px;
+    background: rgba(46,139,87,0.1);
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.badge-bubble {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 1.1em;
+}
+
+/* Efectos de onda dinámicos */
+@keyframes wave {
+    0% { background-position-x: 0; }
+    100% { background-position-x: 200px; }
+}
+
+.wave-divider {
+    height: 20px;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 10 C20 18 40 2 60 10 S100 18 100 10 V20 H0 Z" fill="%23006994"/></svg>');
+    animation: wave 10s linear infinite;
+    opacity: 0.3;
+}
+
 
 /* Select2 personalizado */
 .select2-container--custom .select2-selection {
@@ -156,4 +217,66 @@ body {
 .dropdown-item:hover {
     background-color: #006994; /* Fondo azul oscuro al pasar el mouse */
     color: #ffffff; /* Texto blanco al pasar el mouse */
+}
+
+/* Table responsive */
+.table-responsive {
+    max-height: 400px;
+    overflow: auto;
+    background-color: #87CEEB; /* Azul cielo */
+    color: #fff; /* Texto blanco */
+    border: 1px solid #006994; /* Azul oscuro */
+}
+
+/* Main section */
+.main-responsive {
+    max-height: 600px;
+    background-color: #006994; /* Azul profundo */
+    color: #f8f9fa; /* Texto blanco */
+}
+
+/* Datepicker */
+.datepicker {
+    border: 2px solid #006994; /* Borde azul oscuro */
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #87CEEB; /* Fondo azul cielo */
+    color: #fff; /* Texto blanco */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.datepicker:focus {
+    border-color: #004d66; /* Borde azul más oscuro */
+    background-color: #fff; /* Fondo blanco */
+    color: #006994; /* Texto azul oscuro */
+    box-shadow: 0 0 10px rgba(0, 77, 102, 0.5);
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #004d66; /* Azul oscuro */
+    margin-bottom: 8px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Contenedores de inputs */
+.input-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-container .datepicker-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: #004d66; /* Azul oscuro */
+    font-size: 18px;
 }

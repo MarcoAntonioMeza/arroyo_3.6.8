@@ -331,6 +331,7 @@ def CREDITOS_CLIENTE(cliente_id=295,days=60,date_inicio=None,date_fin=None):
       AND cl.id = {cliente_id}
       AND FROM_UNIXTIME(c.created_at) BETWEEN '{date_ini}' AND '{date_fin}';
     """
+    print(sql) 
 
     return sql
 

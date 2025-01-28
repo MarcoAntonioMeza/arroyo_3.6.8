@@ -3,30 +3,30 @@
 
 {% load custom_filters %}
 {% load humanize %}
-{% block content %}
+{% block titulo %}PRODUCTOS MENOS VENDIDOS{% endblock %}
 
-<div class=" mt-4">
+{% block content %}
 
     <div class="row mb-5">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-
-
             <form method="GET" action="{% url 'producto_menos_vendidos' %}" class="mb-4">
                 <div class="row">
                     <div class="col-md-4">
-                        <label for="fechaInicio">Fecha de inicio:</label>
+                        <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de inicio:</label>
                         <input type="text" id="fechaInicio" name="fecha_inicio" class="form-control datepicker"
                             value="{{ fecha_inicio }}" placeholder="Selecciona la fecha" required>
                     </div>
 
                     <div class="col-md-4">
-                        <label for="fechaFin">Fecha de fin:</label>
+                        <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de fin:</label>
+
                         <input type="text" id="fechaFin" name="fecha_fin" class="form-control datepicker"
                             value="{{ fecha_fin }}" placeholder="Selecciona la fecha" required>
                     </div>
                     <div class="col-md-2">
-                        <label for="fechaFin">CANTIDAD DE PRODUCTOS</label>
+                        <label for="yearSelect" class="form-label"></i>Cantidad:</label>
+
                         <input type="number" id="fechaFin" name="cantidad" class="form-control " value="{{ cantidad }}"
                             required>
                     </div>
@@ -46,10 +46,13 @@
     <div class="row mb-5">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-            <div class="card shadow">
+            <div class="card marine-chart">
+                <div class="card-header chart-header">
+                    PRODUCTOS Menos VENDIDOS del {{fecha_inicio_str}} a
+                    {{fecha_fin_str}}
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title text-center">PRODUCTOS Menos VENDIDOS del {{fecha_inicio_str}} a
-                        {{fecha_fin_str}}</h4>
+                    
                     <div id="graph-container" class="mt-4">{{ plot|safe }}</div>
                 </div>
             </div>
@@ -59,9 +62,12 @@
         <div class="col-md-1"></div>
         <div class="col-md-10">
 
-            <div class="card shadow">
+            <div class="card marine-chart">
+                <div class="card-header chart-header">
+                    Cantidad de Productos Vendidos por Año
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title text-center">Cantidad de Productos Vendidos por Año</h4>
+                    
                     <div class="table-responsive mt-3">
                         <table class="table table-hover table-bordered ">
                             <thead>
@@ -95,9 +101,12 @@
     <div class="row mb-5">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-            <div class="card shadow">
+            <div class="card marine-chart">
+                <div class="card-header chart-header">
+                    Estadísticas Generales por Producto
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title text-center">Estadísticas Generales por Producto</h4>
+                    
                     <div id="graph-container" class="mt-4">{{ plot_pie | safe }}</div>
                 </div>
             </div>
@@ -108,9 +117,11 @@
     <div class="row mb-5">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-            <div class="card shadow">
+            <div class="card marine-chart">
+                <div class="card-header chart-header">
+                    Estadísticas Generales por Producto
+                </div>
                 <div class="card-body">
-                    <h4 class="card-title text-center">Estadísticas Generales por Producto</h4>
                     <div class="table-responsive mt-3">
                         <table class="table table-hover table-bordered  mt-3">
                             <thead>
@@ -149,9 +160,11 @@
         <div class="row mb-5">
             <div class="col-md-1"></div>
             <div class="col-md-10">
-                <div class="card shadow">
+                <div class="card marine-chart">
+                    <div class="card-header chart-header">
+                        {{producto}}
+                    </div>
                     <div class="card-body">
-                        <h4 class="card-title text-center">{{ producto }}</h4>
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered  mt-3 ">
                                 <thead class="thead-light">
@@ -191,5 +204,5 @@
 
 
 
-</div>
+
 {% endblock %}

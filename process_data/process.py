@@ -257,7 +257,7 @@ def graficar_por_anio_mes_dia(df_ventas, df_creditos, df_abonos, ANIO, MES):
 # Configurar el layout con colores complementarios
     # Configurar el layout con un estilo mejorado para la visibilidad del texto
     fig.update_layout(
-        title=f'Ventas, C.P y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
+        title= "",#f'Ventas, C.P y Pagos en {MESES[MES - 1]} {ANIO} por Día'.upper(),
         xaxis_title='DÍAS',
         yaxis_title='Monto Total en Pesos'.upper(),
         barmode='group',  # Agrupar las barras

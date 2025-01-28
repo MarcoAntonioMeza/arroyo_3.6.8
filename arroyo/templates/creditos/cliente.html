@@ -1,28 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block titulo %}CRÉDITOS Y ABONOS del {{fecha_inicio_str}} a  {{fecha_fin_str}}{% endblock %}
 
 {% block content %}
 
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <!-- Gráfica General de Ventas -->
-                <div class="card shadow mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">CREDITOS Y ABONOS del {{fecha_inicio_str}} a  {{fecha_fin_str}}</h5>
-                        </h5>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <form method="GET" action="{% url 'creditos_cliente' %}" class="mb-4">
             <div class="row">
                 <div class="col-md-4">
-                    <label for="cliente">Selecciona cliente:</label>
+                    <label for="yearSelect" class="form-label">Selecciona cliente:</label>
                     <select name="cliente" id="cliente" class="form-control select2" required>
                         <option value="">Seleccione un cliente</option>
                         {% for id, name in client_choices %}
@@ -32,13 +22,14 @@
                 </div>
         
                 <div class="col-md-3">
-                    <label for="fechaInicio">Fecha de inicio:</label>
+                    <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha de inicio:</label>
+
                     <input type="text" id="fechaInicio" name="fecha_inicio" class="form-control datepicker"
                         value="{{ fecha_inicio }}" placeholder="Selecciona la fecha" required>
                 </div>
         
                 <div class="col-md-3">
-                    <label for="fechaFin">Fecha de fin:</label>
+                    <label for="yearSelect" class="form-label"><i class="fas fa-calendar-alt"></i> Fecha FIN:</label>
                     <input type="text" id="fechaFin" name="fecha_fin" class="form-control datepicker"
                         value="{{ fecha_fin }}" placeholder="Selecciona la fecha" required>
                 </div>
@@ -56,49 +47,46 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card shadow mb-4">
+                        <div class="card marine-card sales-card">
+                            <div class="card-header">
+                                <h5 class="card-title"></i>CRÉDITO</h5>
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i>
-                                    CRÉDITO </h5>
-                                <ul class="list-group list-group-flush text-center">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                                        <span class="text-center">{{ info.creditos }}</span>
-                                    </li>
-
-                                </ul>
+                                <div class="marine-stat">
+                                    <div class="summary-value text-center display-4">
+                                        {{ info.creditos }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card shadow mb-4">
+                        <div class="card marine-card sales-card">
+                            <div class="card-header">
+                                <h5 class="card-title"></i>ABONOS</h5>
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i> 
-                                    ABONOS
-                                </h5>
-                                <ul class="list-group list-group-flush text-center">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                                        <span class="text-center">{{ info.abonos }}</span>
-                                    </li>
-
-                                </ul>
+                                <div class="marine-stat">
+                                    <div class="summary-value text-center display-4">
+                                        {{ info.abonos }}
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card shadow mb-4">
+                        <div class="card marine-card sales-card">
+                            <div class="card-header">
+                                <h5 class="card-title"></i> POR PAGAR</h5>
+                            </div>
                             <div class="card-body">
-                                <h5 class="card-title text-center"><i class="fas fa-money-bill-wave"></i>
-                                POR PAGAR
-                                </h5>
-                                <ul class="list-group list-group-flush text-center ">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                                        <span class="text-center">{{ info.por_pagar }}</span>
-                                    </li>
-
-                                </ul>
+                                <div class="marine-stat">
+                                    <div class="summary-value text-center display-4">
+                                        {{ info.por_pagar }}
+                                    </div>
+                                </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -106,7 +94,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-md-12">
                 <!-- Gráfica General de Ventas -->
                 <div class="card shadow mb-4">

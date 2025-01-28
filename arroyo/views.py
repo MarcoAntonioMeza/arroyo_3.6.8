@@ -13,7 +13,7 @@ from django.contrib import messages
 
 
 def index(request):
-    data = vetas_totales()
+    data = None#vetas_totales()
     return render(request, 'ventas/index.html',data)
 
 def ventas_mes(request):
