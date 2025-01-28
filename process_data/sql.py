@@ -135,10 +135,11 @@ def COMPRAS_PROVEDOR_C(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
         FROM_UNIXTIME(cm.fecha_salida) AS fecha_salida
     FROM compra AS cm   
     JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-    WHERE cm.`status` = 40
+    WHERE cm.`status` != 1
     AND FROM_UNIXTIME(cm.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     ORDER BY id DESC;
     """
+    #print(sql)
     return sql
 
 def CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
@@ -161,6 +162,7 @@ def CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
     WHERE c.`status` != 20
     AND FROM_UNIXTIME(c.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     """
+    #print(sql)
     return sql
 
 
@@ -182,6 +184,8 @@ def ABONO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
     WHERE ca.`status` = 10
     AND FROM_UNIXTIME(ca.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     """
+    
+    #print(sql)
     return sql
 
 
@@ -229,7 +233,7 @@ FROM compra_detalle AS cd
 INNER JOIN producto AS p ON p.id = cd.producto_id
 INNER  JOIN compra AS cm ON cd.compra_id = cm.id 
 LEFT JOIN proveedor pr ON cm.proveedor_id = pr.id
-WHERE cm.`status` = 40
+ WHERE cm.`status` != 1
  ORDER BY cd.id DESC;
 """
 
@@ -243,7 +247,7 @@ UPPER(pr.nombre) AS proveedor,
 ROUND(SUM(cm.total),2) AS total_money
 FROM compra AS cm
 JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-WHERE cm.`status` = 40
+WHERE cm.`status` != 1
 GROUP BY cm.proveedor_id
 ORDER BY total_money DESC 
 """
@@ -290,7 +294,7 @@ FROM
             pr.id
     ) AS abono_data ON pr.id = abono_data.pr_id
 WHERE
-    cm.`status` = 40
+    cm.`status` != 1
 GROUP BY
     cm.proveedor_id
 ORDER BY

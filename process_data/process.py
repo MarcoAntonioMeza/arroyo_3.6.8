@@ -666,7 +666,7 @@ def compras_credito_abonos(anio,mes):
 
     # Configurar el layout
     fig.update_layout(
-        title=f'Ventas, C.P y ABONOS en {MESES[mes - 1]} {anio} por Día'.upper(),
+        title= "",#f'Ventas, C.P y ABONOS en {MESES[mes - 1]} {anio} por Día'.upper(),
         xaxis_title='DÍAS',
         yaxis_title='Monto Total en Pesos'.upper(),
         barmode='group',  # Agrupar las barras
@@ -821,38 +821,51 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
         #FILTROS
         #ABONOS
         abonos_gen_fil = dc_ab[
-            (dc_ab['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-            (dc_ab['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-            (dc_ab['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+            (dc_ab['proveedor'] == proveedor_name) 
+            #&  # Filtrar por nombre del proveedor
+            #(dc_ab['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            #(dc_ab['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
         ]
+        
         #print(abonos_gen_fil.head(5))
         #creditos
         credits_gen_fil = dc_cr[
-            (dc_cr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-            (dc_cr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-            (dc_cr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+            (dc_cr['proveedor'] == proveedor_name) 
+            #&  # Filtrar por nombre del proveedor
+            #(dc_cr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            #(dc_cr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
         ]
         #COMPRAS 
         compra_gen_fil = dc_cpr[
-            (dc_cpr['proveedor'] == proveedor_name) &  # Filtrar por nombre del proveedor
-            (dc_cpr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
-            (dc_cpr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
+            (dc_cpr['proveedor'] == proveedor_name) 
+            #&  # Filtrar por nombre del proveedor
+            #(dc_cpr['fecha'] >= date_ini) &          # Filtrar desde la fecha de inicio
+            #(dc_cpr['fecha'] <= date_fin)               # Filtrar hasta la fecha de fin
         ]
         
     
-        resumen_abono = abonos_gen_fil.groupby('proveedor')['cantidad'].sum().reset_index()
-        resumen_compras = compra_gen_fil.groupby('proveedor')['total_compra'].sum().reset_index()
-        resumen_creditos = credits_gen_fil.groupby('proveedor')['monto_credito'].sum().reset_index()
+        
 
+       # Generar resúmenes con nombres de columnas específicos
+        resumen_abono = abonos_gen_fil.groupby('proveedor')['cantidad'].sum().reset_index().rename(columns={'cantidad': 'abonos'})
+        #print(resumen_abono)
+        resumen_compras = compra_gen_fil.groupby('proveedor')['total_compra'].sum().reset_index().rename(columns={'total_compra': 'compras'})
+        resumen_creditos = credits_gen_fil.groupby('proveedor')['monto_credito'].sum().reset_index().rename(columns={'monto_credito': 'creditos'})
 
+        # Realizar el merge
+        merge = (
+            resumen_abono.merge(resumen_compras, on='proveedor', how='outer')
+                         .merge(resumen_creditos, on='proveedor', how='outer')
+                         .fillna(0)
+        )
 
-        merge = resumen_abono.merge(resumen_compras, on='proveedor', how='outer') \
-            .merge(resumen_creditos, on='proveedor', how='outer')
-        merge.columns = ['proveedor', 'abonos', 'compras', 'creditos']
-        merge.fillna(0)
-        #merge['adeudo'] = merge['creditos'] - merge['abonos'] 
+      
+
+        # Verificar el resultado
+        #print(merge)
         xlabel = 'indicador'
         ylabel = 'monto'
+        #print(merge)
         
         plot_totales_filtro = grafica_plotly(merge,['compras','creditos','abonos'],['COMPRAS','CRÉDITOS','abonos'],'proveedor',f'Resumen de {proveedor_name}',xlabel,ylabel,prefijo_before='$',add_trendline=False)
     except IOError as e:
