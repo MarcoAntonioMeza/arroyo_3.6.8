@@ -381,3 +381,32 @@ JOIN cliente AS cl ON cl.id = c.cliente_id
 GROUP BY cl.id, cl.nombre
 ORDER BY creditos_sum DESC;
 """
+
+
+def CREDITOS_CLIENTE_ERP(cliente_id=295,days=60,date_inicio=None,date_fin=None):
+    # Get today's date
+    today = datetime.today()
+    # Calculate the date one month ago
+    one_month_ago = today - timedelta(days=days)
+    
+    sql = f"""
+        SELECT
+        `credito`.monto,
+        `credito`.monto_pagado
+        FROM
+            `credito`
+            LEFT JOIN `venta` ON credito.venta_id = venta.id
+        WHERE
+            (`credito`.`tipo` = 10)
+            AND (
+                (`venta`.`cliente_id` = {cliente_id})
+                OR (`credito`.`cliente_id` = {cliente_id})
+            )
+            AND (
+                (`credito`.`status` = 10)
+                OR (`credito`.`status` = 40)
+            )
+            AND FROM_UNIXTIME(`credito`.created_at) >= '{date_inicio}' AND FROM_UNIXTIME(`credito`.created_at) <= '{date_fin}';
+    """
+    
+    return sql

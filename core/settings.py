@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-oh%%=*u3z#9p%h7l!s7-&3ebye+h7l&mmjix5z00b#ke^bc&^l
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-IS_DEVELOPMENT = False
+IS_DEVELOPMENT = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -80,7 +80,7 @@ if IS_DEVELOPMENT:
         },
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'dash_arroyo',
+            'NAME': 'dash.arroyo',
             'USER': 'root',
             'PASSWORD': '',
             'HOST': 'localhost',  # Por ejemplo, '123.45.67.89' o 'mysql.ejemplo.com'

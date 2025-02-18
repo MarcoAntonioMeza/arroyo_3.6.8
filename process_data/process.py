@@ -1055,20 +1055,34 @@ def get_creditos_abonos_by_cliente(cliente_id, fecha_inicio, fecha_fin, tipo_gra
               y una gráfica en HTML.
     """
     try:
-        # Cargar datos
-        DF_CREDITOS = consulta_sql(CREDITOS_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
-        DF_ABONOS = consulta_sql(CREDITO_ABONO_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
+        ## Cargar datos
+        #DF_CREDITOS = consulta_sql(CREDITOS_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
+        #DF_ABONOS = consulta_sql(CREDITO_ABONO_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
         
-        if DF_CREDITOS.empty and DF_ABONOS.empty:
-            return {'creditos': "$0.00", 'abonos': "$0.00", 'por_pagar': "$0.00", 'grafica': None}
+        QUERY = CREDITOS_CLIENTE_ERP(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin)
+        print(QUERY)
+        DF = consulta_sql(QUERY)
         
-        # Procesar datos
-        DF_CREDITOS = add_columns_date_spanish(DF_CREDITOS)
-        DF_ABONOS = add_columns_date_spanish(DF_ABONOS)
+        DF = DF.fillna(0)
+        print(DF)
         
-        sum_creditos = DF_CREDITOS['monto'].sum()
-        sum_abonos = DF_ABONOS['cantidad'].sum()
+        DF['monto'] = DF['monto'].astype(float)
+        DF['monto_pagado'] = DF['monto_pagado'].astype(float)
+        
+        sum_creditos = DF['monto'].sum()
+        sum_abonos = DF['monto_pagado'].sum()
         por_pagar = sum_creditos - sum_abonos
+        
+        #if DF_CREDITOS.empty and DF_ABONOS.empty:
+        #    return {'creditos': "$0.00", 'abonos': "$0.00", 'por_pagar': "$0.00", 'grafica': None}
+        #
+        ## Procesar datos
+        #DF_CREDITOS = add_columns_date_spanish(DF_CREDITOS)
+        #DF_ABONOS = add_columns_date_spanish(DF_ABONOS)
+        #
+        #sum_creditos = DF_CREDITOS['monto'].sum()
+        #sum_abonos = DF_ABONOS['cantidad'].sum()
+        #por_pagar = sum_creditos - sum_abonos
         
         # Crear gráfico de pastel
         fig = go.Figure()
