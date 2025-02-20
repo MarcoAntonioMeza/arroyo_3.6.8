@@ -136,11 +136,11 @@ def COMPRAS_PROVEDOR_C(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
         FROM_UNIXTIME(cm.fecha_salida) AS fecha_salida
     FROM compra AS cm   
     JOIN proveedor AS pr ON pr.id = cm.proveedor_id
-    WHERE cm.`status` != 1
+    -- WHERE cm.`status` != 1
     AND FROM_UNIXTIME(cm.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     ORDER BY id DESC;
     """
-    #print(sql)
+   # print(sql)
     return sql
 
 def CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
@@ -234,7 +234,7 @@ FROM compra_detalle AS cd
 INNER JOIN producto AS p ON p.id = cd.producto_id
 INNER  JOIN compra AS cm ON cd.compra_id = cm.id 
 LEFT JOIN proveedor pr ON cm.proveedor_id = pr.id
- WHERE cm.`status` != 1
+ -- WHERE cm.`status` != 1
  ORDER BY cd.id DESC;
 """
 

@@ -1028,8 +1028,6 @@ def compras_proveedor_pro(proveedor_name,date_ini,date_fin):
     return data
 
 
-def ventas_compra_producto(producto_name,date_ini,date_fin):
-    pass
 
 
 """
@@ -1060,11 +1058,11 @@ def get_creditos_abonos_by_cliente(cliente_id, fecha_inicio, fecha_fin, tipo_gra
         #DF_ABONOS = consulta_sql(CREDITO_ABONO_CLIENTE(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin))
         
         QUERY = CREDITOS_CLIENTE_ERP(cliente_id=cliente_id, date_inicio=fecha_inicio, date_fin=fecha_fin)
-        print(QUERY)
+        #print(QUERY)
         DF = consulta_sql(QUERY)
         
         DF = DF.fillna(0)
-        print(DF)
+        #print(DF)
         
         DF['monto'] = DF['monto'].astype(float)
         DF['monto_pagado'] = DF['monto_pagado'].astype(float)
