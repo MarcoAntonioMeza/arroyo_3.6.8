@@ -110,6 +110,7 @@ def VENTA_DETALLE(fecha_inicio=None, fecha_fin=None):
         sucursal AS pertenece ON v.sucursal_id = pertenece.id
     WHERE
         DATE(FROM_UNIXTIME(vd.created_at)) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
+        and v.status != 1
     """
     #print( consulta_sql.strip())
     return consulta_sql.strip()
@@ -162,7 +163,7 @@ def CREDITO_PROVEDOR(año_ini, mes_ini, dia_ini, año_fin, mes_fin, dia_fin):
     WHERE c.`status` != 20
     AND FROM_UNIXTIME(c.created_at) BETWEEN '{fecha_inicio}' AND '{fecha_fin}'
     """
-    #print(sql)
+    #print(sql,'creditoo_proveedor')
     return sql
 
 
